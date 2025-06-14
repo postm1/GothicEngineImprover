@@ -211,7 +211,17 @@ namespace GOTHIC_ENGINE {
 		if (zinput->KeyPressed(KEY_F9))
 		{
 			isOldMethod = !isOldMethod;
-			printWinC("NEW FPS: " + Z !isOldMethod);
+
+			if (isOldMethod)
+			{
+				printWinC("Íîâûé ðåæèì: ÎÒÊËÞ×ÅÍ");
+				
+			}
+			else
+			{
+				printWinC("Íîâûé ðåæèì: ÂÊËÞ×ÅÍ");
+			}
+			
 
 			zinput->ClearKeyBuffer();
 		}

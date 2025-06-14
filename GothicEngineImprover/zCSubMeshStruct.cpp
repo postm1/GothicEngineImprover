@@ -78,7 +78,7 @@ namespace GOTHIC_ENGINE {
 	}
 
 
-	//HOOK ivk_zCSubMesh_Destructor AS(&zCProgMeshProto::zCSubMesh::~zCSubMesh, &zCProgMeshProto::zCSubMesh::DestrUnion);
+	HOOK ivk_zCSubMesh_Destructor AS(&zCProgMeshProto::zCSubMesh::~zCSubMesh, &zCProgMeshProto::zCSubMesh::DestrUnion);
 	void zCProgMeshProto::zCSubMesh::DestrUnion()
 	{
 		//cmd << "### zCSubMesh Remove: " << this->triList.GetNum() << endl;

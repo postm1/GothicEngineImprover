@@ -319,7 +319,7 @@ namespace GOTHIC_ENGINE {
 			{
 				zBOOL result = THISCALL(ivk_zCProgMeshProto_TraceRay)(rayOrigin, ray, traceFlags, report);
 
-				cmd << "Return No entry found: " << this->GetVisualName() << endl;
+				//cmd << "Return No entry found: " << this->GetVisualName() << endl;
 
 				RX_Perf_End("zCProgMeshProto::TraceRay_Union");
 
