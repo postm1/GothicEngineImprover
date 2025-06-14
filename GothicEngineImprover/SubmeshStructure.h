@@ -79,7 +79,7 @@ namespace GOTHIC_ENGINE {
 
 
 
-	static bool isOldMethod = true;
+	static bool isOldMethod = false;
 	static bool freezeDebug = false;
 	int maxLevel = 1;
 
