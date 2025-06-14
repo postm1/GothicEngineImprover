@@ -275,7 +275,7 @@ namespace GOTHIC_ENGINE {
 
 
 		bool isDebugBuild = false;
-		bool showBuildMessage = true;
+		bool showBuildMessage = false;
 
 		RX_Begin(53);
 

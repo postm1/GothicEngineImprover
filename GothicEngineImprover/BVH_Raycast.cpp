@@ -101,7 +101,7 @@ namespace GOTHIC_ENGINE {
 	zBOOL zCProgMeshProto::TraceRay_Union(const zVEC3& rayOrigin, const zVEC3& ray, const int traceFlags, zTTraceRayReport& report)
 	{
 
-		RX_Perf_Start_Inner("zCProgMeshProto::TraceRay_Union", PerfType::PERF_TYPE_PER_FRAME);
+		RX_Perf_Start("zCProgMeshProto::TraceRay_Union", PerfType::PERF_TYPE_PER_FRAME);
 
 		const int testTwoSided = traceFlags & zTRACERAY_POLY_2SIDED;
 
@@ -113,7 +113,7 @@ namespace GOTHIC_ENGINE {
 		{
 			zBOOL result = THISCALL(ivk_zCProgMeshProto_TraceRay)(rayOrigin, ray, traceFlags, report);
 
-			RX_Perf_End_Inner("zCProgMeshProto::TraceRay_Union");
+			RX_Perf_End("zCProgMeshProto::TraceRay_Union");
 
 			return result;
 		}
@@ -321,7 +321,7 @@ namespace GOTHIC_ENGINE {
 
 				cmd << "Return No entry found: " << this->GetVisualName() << endl;
 
-				RX_Perf_End_Inner("zCProgMeshProto::TraceRay_Union");
+				RX_Perf_End("zCProgMeshProto::TraceRay_Union");
 
 				return result;
 			}
@@ -340,7 +340,7 @@ namespace GOTHIC_ENGINE {
 		}
 
 
-		RX_Perf_End_Inner("zCProgMeshProto::TraceRay_Union");
+		RX_Perf_End("zCProgMeshProto::TraceRay_Union");
 
 
 		return report.foundHit;

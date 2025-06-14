@@ -24,8 +24,9 @@ namespace GOTHIC_ENGINE {
       visualLoadBVHTimeThisFrame = 0;
 
       //cmd << "=========================================" << endl;
-
+#if defined(DEF_PERF_APPLY) || defined(DEF_PERF_UPDATE)
       RX_Perf_UpdateFrame();
+#endif
       RenderTestCast();
   }
 
