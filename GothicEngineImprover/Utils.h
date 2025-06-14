@@ -282,6 +282,7 @@ namespace GOTHIC_ENGINE {
 		}
 	}
 
+//#define DEF_PERF_APPLY
 
 #ifdef DEF_PERF_APPLY
 #define RX_Perf_Start(name, type) RX_Perf_Start_Inner(name, type);
