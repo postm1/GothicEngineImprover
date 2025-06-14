@@ -240,13 +240,16 @@ namespace GOTHIC_ENGINE {
 				};
 				*/
 
-				bool foundError = false;
 
-				int time = 1000 * 1000;
-				auto posFoundDiff = raycastReport.intersGlobal.Distance(report.foundIntersection);
+
+				
+				
 
 				if (false && !freezeDebug)
 				{
+					auto posFoundDiff = raycastReport.intersGlobal.Distance(report.foundIntersection);
+					int time = 1000 * 1000;
+
 					if (firstHitMode)
 					{
 						if (raycastReport.hitFoundGlobal != report.foundHit)
