@@ -277,7 +277,7 @@ namespace GOTHIC_ENGINE {
 		bool isDebugBuild = false;
 		bool showBuildMessage = false;
 
-		RX_Begin(53);
+		//RX_Begin(53);
 
 		bvhDebug.triasCheckerCount = 0;
 
@@ -316,7 +316,7 @@ namespace GOTHIC_ENGINE {
 
 		ScaleBboxes(root);
 
-		RX_End(53);
+		//RX_End(53);
 
 
 

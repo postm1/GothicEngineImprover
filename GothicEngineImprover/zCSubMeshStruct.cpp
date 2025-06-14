@@ -96,13 +96,83 @@ namespace GOTHIC_ENGINE {
 		//THISCALL(ivk_zCSubMesh_Destructor)();
 	}
 
+
+	std::mutex traceMapMutex;
+
+	void ProcessSubMeshRange(
+		const std::unordered_map<zCProgMeshProto::zCSubMesh*, zCProgMeshProto*>& bigSubmeshes,
+		std::unordered_map<zCProgMeshProto::zCSubMesh*, zCSubMeshStruct>& localResult, // Локальный результат потока
+		size_t startIndex,
+		size_t endIndex
+	) {
+		auto it = std::next(bigSubmeshes.begin(), startIndex);
+		auto endIt = std::next(bigSubmeshes.begin(), endIndex);
+
+		for (; it != endIt; ++it) {
+			auto* submesh = it->first;
+			auto* meshProto = it->second;
+
+			if (!submesh || !meshProto) continue;
+
+			// Локальная проверка (без блокировок!)
+			if (localResult.find(submesh) != localResult.end()) continue;
+
+			zCSubMeshStruct collEntry;
+			collEntry.BuildMap(meshProto, submesh);  // Самая тяжелая часть
+			localResult[submesh] = std::move(collEntry);
+		}
+	}
+
+	void ProcessAllSubMeshesParallel(
+		const std::unordered_map<zCProgMeshProto::zCSubMesh*, zCProgMeshProto*>& bigSubmeshes,
+		std::unordered_map<zCProgMeshProto::zCSubMesh*, zCSubMeshStruct>& pTraceMap
+	) {
+		const size_t totalItems = bigSubmeshes.size();
+		const unsigned int maxThreads = std::thread::hardware_concurrency();
+		const size_t itemsPerThread = (totalItems + maxThreads - 1) / maxThreads;
+
+		// 1. Каждый поток работает со своим локальным результатом
+		std::vector<std::thread> threads;
+		std::vector<std::unordered_map<zCProgMeshProto::zCSubMesh*, zCSubMeshStruct>> threadResults(maxThreads);
+
+		for (unsigned int i = 0; i < maxThreads; ++i) {
+			size_t start = i * itemsPerThread;
+			size_t end = min(start + itemsPerThread, totalItems);
+			if (start >= totalItems) break;
+
+			threads.emplace_back(
+				ProcessSubMeshRange,
+				std::cref(bigSubmeshes),
+				std::ref(threadResults[i]),  // Локальный контейнер для i-го потока
+				start,
+				end
+			);
+		}
+
+		// 2. Дожидаемся завершения всех потоков
+		for (auto& thread : threads) {
+			thread.join();
+		}
+
+		// 3. Объединяем результаты (одна блокировка на весь merge)
+		std::lock_guard<std::mutex> lock(traceMapMutex);
+		for (auto& localMap : threadResults) {
+			pTraceMap.insert(localMap.begin(), localMap.end());
+		}
+	}
+
 	void RayCastVob_OnLevelLoaded()
 	{
 		RX_Begin(54);
 		zCArray<zCVob*> arrVobs;
 
-		pTraceMap.clear();
-		pTraceMap.reserve(3000);
+
+		for (auto& pair : pTraceMap) 
+		{
+			pair.second.Clear();  
+		}
+
+		pTraceMap.clear(); 
 
 		ogame->GetWorld()->SearchVobListByBaseClass(zCVob::classDef, arrVobs, NULL);
 
@@ -132,7 +202,7 @@ namespace GOTHIC_ENGINE {
 							{
 								zCProgMeshProto::zCSubMesh* subMesh = &(pProto->subMeshList[s]);
 
-								if (subMesh && subMesh->triList.GetNum() >= 1500)
+								if (subMesh && subMesh->triList.GetNum() >= 0)
 								{
 									if (bigSubmeshes.find(subMesh) == bigSubmeshes.end())
 									{
@@ -147,6 +217,8 @@ namespace GOTHIC_ENGINE {
 			}
 		}
 
+
+		/*
 		// 1. Переносим элементы в вектор для сортировки
 		std::vector<std::pair<zCProgMeshProto::zCSubMesh*, zCProgMeshProto*>> sortedSubmeshes(
 			bigSubmeshes.begin(),
@@ -161,9 +233,17 @@ namespace GOTHIC_ENGINE {
 				return a.first->triList.GetNum() > b.first->triList.GetNum();
 			}
 		);
+		*/
 
+		pTraceMap.reserve(bigSubmeshes.size() * 2);
+
+		//cmd << "ProcessAllSubMeshesParallel" << endl;
+
+		ProcessAllSubMeshesParallel(bigSubmeshes, pTraceMap);
+
+		/*
 		// 3. Теперь итерируемся по отсортированному списку
-		for (const auto& it : sortedSubmeshes)
+		for (const auto& it : bigSubmeshes)
 		{
 			auto* submesh = it.first;
 			auto* meshProto = it.second;
@@ -172,12 +252,6 @@ namespace GOTHIC_ENGINE {
 			{
 				if (pTraceMap.find(submesh) == pTraceMap.end())
 				{
-
-					/*if (submesh->triList.GetNum() >= 1500)
-					{
-						cmd << submesh->triList.GetNum() << " | " << meshProto->GetVisualName() << endl;
-					}
-	*/
 
 					RX_Begin(55);
 
@@ -191,19 +265,10 @@ namespace GOTHIC_ENGINE {
 
 					timeRequires += perf[55];
 
-
-					// if it require > 100 ms to load => load it later
-					if ((timeRequires / 1000.0f) >= 10)
-					{
-						/*
-						cmd << "STOP LONG TIME" << endl;
-						flagStop = true;
-						break;
-						*/
-					}
 				}
 			}
 		}
+		*/
 
 
 
@@ -229,5 +294,7 @@ namespace GOTHIC_ENGINE {
 		RX_End(54);
 
 		cmd << "RaycastVobs build time: " << RX_PerfString(54) << " Size: " << pTraceMap.size() << endl;
+
+		cmd << "-----------------\n" << endl;
 	}
 }

@@ -181,12 +181,32 @@ namespace GOTHIC_ENGINE {
 	void RenderTestCast()
 	{
 
-		auto wld = ogame->GetWorld();
+		if (zinput->KeyPressed(KEY_F9))
+		{
+			isOldMethod = !isOldMethod;
+
+			if (isOldMethod)
+			{
+				printWinC("Íîâûé ðåæèì: ÎÒÊËÞ×ÅÍ");
+
+			}
+			else
+			{
+				printWinC("Íîâûé ðåæèì: ÂÊËÞ×ÅÍ");
+			}
+
+
+			zinput->ClearKeyBuffer();
+		}
+
+		return;
+
+		/*auto wld = ogame->GetWorld();
 		auto pos = player->GetPositionWorld() + zVEC3(0, -10, 0);
 		auto dir = player->GetAtVectorWorld() * 600;
 
 		zCArray <zCVob*> ignore;
-		ignore.Insert(player);
+		ignore.Insert(player);*/
 
 		/*
 		if (KeyClick(KEY_F1))
@@ -208,23 +228,7 @@ namespace GOTHIC_ENGINE {
 		}
 		*/
 
-		if (zinput->KeyPressed(KEY_F9))
-		{
-			isOldMethod = !isOldMethod;
-
-			if (isOldMethod)
-			{
-				printWinC("Íîâûé ðåæèì: ÎÒÊËÞ×ÅÍ");
-				
-			}
-			else
-			{
-				printWinC("Íîâûé ðåæèì: ÂÊËÞ×ÅÍ");
-			}
-			
-
-			zinput->ClearKeyBuffer();
-		}
+	
 
 		/*if (KeyClick(KEY_F4))
 		{
@@ -239,70 +243,6 @@ namespace GOTHIC_ENGINE {
 
 			CLR_KEY(KEY_F4);
 		}*/
-
-
-
-		return;
-
-		if (wld->TraceRayNearestHit(pos, dir, &ignore, zTRACERAY_STAT_POLY | zTRACERAY_VOB_IGNORE_NO_CD_DYN | zTRACERAY_VOB_IGNORE_CHARACTER))
-		{
-			if (auto pVob = wld->traceRayReport.foundVob)
-			{
-				bool flagFoundVisual = false;
-
-				if (auto pVisual = pVob->GetVisual())
-				{
-					if (auto pProto = pVisual->CastTo<zCProgMeshProto>())
-					{
-						for (int s = 0; s < pProto->numSubMeshes; s++)
-						{
-							zCProgMeshProto::zCSubMesh* subMesh = &(pProto->subMeshList[s]);
-
-							if (subMesh && subMesh->material && !subMesh->material->noCollDet)
-							{
-								if (pTraceMap.find(subMesh) != pTraceMap.end())
-								{
-									flagFoundVisual = true;
-									pVob->SetCollDet(FALSE);
-									pVob->ResetRotationsWorld();
-									pVob->SetCollDet(TRUE);
-									pTraceMap[subMesh].Render(pVob, pProto, subMesh);
-									break;
-								}
-							}
-						}
-					}
-				}
-
-				/*if (flagFoundVisual)
-				{
-					debug.AddVerticalLine(wld->traceRayReport.foundIntersection, 350, GFX_RED, 10);
-				}*/
-
-			}
-		}
-
-		dir = player->GetAtVectorWorld() * 600;
-
-		wld->TraceRayNearestHit(player->GetPositionWorld() + zVEC3(0, -20, 0), dir, &ignore, zTRACERAY_STAT_POLY | zTRACERAY_VOB_IGNORE_NO_CD_DYN | zTRACERAY_VOB_IGNORE_CHARACTER);
-
-
-		dir = player->GetAtVectorWorld() * 600;
-
-		wld->TraceRayNearestHit(player->GetPositionWorld() + zVEC3(0, 10, 0), dir, &ignore, zTRACERAY_STAT_POLY | zTRACERAY_VOB_IGNORE_NO_CD_DYN | zTRACERAY_VOB_IGNORE_CHARACTER);
-
-
-		dir = player->GetRightVectorWorld() * 600;
-		wld->TraceRayNearestHit(pos, dir, &ignore, zTRACERAY_STAT_POLY | zTRACERAY_VOB_IGNORE_NO_CD_DYN | zTRACERAY_VOB_IGNORE_CHARACTER);
-
-		dir = -player->GetRightVectorWorld() * 600;
-		wld->TraceRayNearestHit(pos, dir, &ignore, zTRACERAY_STAT_POLY | zTRACERAY_VOB_IGNORE_NO_CD_DYN | zTRACERAY_VOB_IGNORE_CHARACTER);
-
-
-		dir = player->GetUpVectorWorld() * 600;
-		wld->TraceRayNearestHit(pos, dir, &ignore, zTRACERAY_STAT_POLY | zTRACERAY_VOB_IGNORE_NO_CD_DYN | zTRACERAY_VOB_IGNORE_CHARACTER);
-
-		dir = -player->GetUpVectorWorld() * 600;
-		wld->TraceRayNearestHit(pos, dir, &ignore, zTRACERAY_STAT_POLY | zTRACERAY_VOB_IGNORE_NO_CD_DYN | zTRACERAY_VOB_IGNORE_CHARACTER);
+		
 	}
 }

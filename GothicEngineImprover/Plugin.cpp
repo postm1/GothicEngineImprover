@@ -30,14 +30,21 @@ namespace GOTHIC_ENGINE {
       RenderTestCast();
   }
 
+  void OnLevelFullLoaded()
+  {
+      if (OnLevelFullLoaded_Once) return;
+
+      OnLevelFullLoaded_Once = true;
+
+      
+
+      RayCastVob_OnLevelLoaded();
+  }
+
+
   void Game_Loop() {
-
-      if (!OnLevelFullLoaded_Once)
-      {
-          OnLevelFullLoaded_Once = true;
-          RayCastVob_OnLevelLoaded();
-      }
-
+      
+      OnLevelFullLoaded();
       
   }
 
@@ -57,10 +64,11 @@ namespace GOTHIC_ENGINE {
   }
 
   void LoadBegin() {
+      OnLevelFullLoaded_Once = false;
   }
 
   void LoadEnd() {
-      OnLevelFullLoaded_Once = false;
+     
   }
 
   void Game_LoadBegin_NewGame() {
@@ -88,11 +96,11 @@ namespace GOTHIC_ENGINE {
   }
 
   void Game_LoadBegin_Trigger() {
-      LoadBegin();
+      
   }
   
   void Game_LoadEnd_Trigger() {
-      LoadEnd();
+      
   }
   
   void Game_Pause() {

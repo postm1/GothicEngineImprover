@@ -78,7 +78,6 @@ namespace GOTHIC_ENGINE {
 	std::unordered_map<zCProgMeshProto::zCSubMesh*, zCSubMeshStruct> pTraceMap;
 
 
-
 	static bool isOldMethod = false;
 	static bool freezeDebug = false;
 	int maxLevel = 1;
