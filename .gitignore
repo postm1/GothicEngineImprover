@@ -415,3 +415,6 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+resource.res
+resource.rc
