@@ -19,8 +19,14 @@ namespace GOTHIC_ENGINE {
 
   void Game_PreLoop() {
 
-      visualLoadBVHTimeThisFrame = 0.0f;
 
+      globalFrameCounter++;
+      visualLoadBVHTimeThisFrame = 0;
+
+      //cmd << "=========================================" << endl;
+
+      RX_Perf_UpdateFrame();
+      RenderTestCast();
   }
 
   void Game_Loop() {
@@ -31,7 +37,7 @@ namespace GOTHIC_ENGINE {
           RayCastVob_OnLevelLoaded();
       }
 
-      RenderTestCast();
+      
   }
 
   void Game_PostLoop() {

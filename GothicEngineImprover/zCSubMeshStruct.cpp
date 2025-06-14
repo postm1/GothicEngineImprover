@@ -98,7 +98,6 @@ namespace GOTHIC_ENGINE {
 
 	void RayCastVob_OnLevelLoaded()
 	{
-		return;
 		RX_Begin(54);
 		zCArray<zCVob*> arrVobs;
 
