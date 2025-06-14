@@ -45,7 +45,7 @@ namespace GOTHIC_ENGINE {
 		PerfType type;
 		std::chrono::steady_clock::time_point begin_time;
 		std::chrono::steady_clock::time_point end_time;
-		double result;
+		long long result;
 		int lastCounter;
 		int callsGlobal;
 		int callsPerFrame;
@@ -110,7 +110,7 @@ namespace GOTHIC_ENGINE {
 	}
 
 	bool OnLevelFullLoaded_Once = false;
-	float visualLoadBVHTimeThisFrame = 0.0f;
+	double visualLoadBVHTimeThisFrame = 0.0f;
 	bool bShowPerfTimers = true;
 	int globalFrameCounter = 0;
 	int globalPerfId = 0;
@@ -134,14 +134,14 @@ namespace GOTHIC_ENGINE {
 		}
 
 		// Форматируем основное время
-		const double time_ms = entry.result / 1000;
+		const double time_ms = static_cast<double>(entry.result) / 1000000.0;
 		std::ostringstream oss_time;
 		oss_time << std::fixed << std::setprecision(6) << time_ms;
 
 		// Форматируем среднее время
 		double avg = 0.0;
 		if (entry.callsPerFrame > 0) {
-			avg = (entry.result / static_cast<double>(entry.callsPerFrame)) / 1000.0;
+			avg = (entry.result / static_cast<double>(entry.callsPerFrame)) / 1000000.0;
 		}
 		std::ostringstream oss_avg;
 		oss_avg << std::fixed << std::setprecision(6) << avg;
@@ -268,7 +268,7 @@ namespace GOTHIC_ENGINE {
 		textLevelCurrent--;
 
 
-		auto deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(entry.end_time - entry.begin_time).count();
+		auto deltaTime = std::chrono::duration_cast<std::chrono::nanoseconds>(entry.end_time - entry.begin_time).count();
 
 		if (entry.type == PERF_TYPE_PER_FRAME)
 		{

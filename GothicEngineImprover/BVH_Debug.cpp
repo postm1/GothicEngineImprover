@@ -87,7 +87,7 @@ namespace GOTHIC_ENGINE {
 
 
 
-	void ShowVisualCollisionReport(zCProgMeshProto* proto, const zVEC3& rayOrigin, const zVEC3& ray, float time, zTTraceRayReport& report, int bestTriIndex, zTPlane* bestPlane)
+	void ShowVisualCollisionReport(zCProgMeshProto* proto, const zVEC3& rayOrigin, const zVEC3& ray, int time, zTTraceRayReport& report, int bestTriIndex, zTPlane* bestPlane)
 	{
 
 		/*
@@ -111,7 +111,7 @@ namespace GOTHIC_ENGINE {
 		*/
 	}
 
-	void ShowVisualCollisionReportNew(zCProgMeshProto* proto, const zVEC3& rayOrigin, const zVEC3& ray, float time, bool hitFoundGlobal, bool separate = false)
+	void ShowVisualCollisionReportNew(zCProgMeshProto* proto, const zVEC3& rayOrigin, const zVEC3& ray, int time, bool hitFoundGlobal, bool separate = false)
 	{
 		if (!hitFoundGlobal)
 		{
@@ -146,7 +146,7 @@ namespace GOTHIC_ENGINE {
 	}
 
 
-	void DrawVisualObject(zCProgMeshProto* proto, float time, int bestTriIndexOld)
+	void DrawVisualObject(zCProgMeshProto* proto, int time, int bestTriIndexOld)
 	{
 		for (auto& it : raycastReport.subMeshesFound)
 		{

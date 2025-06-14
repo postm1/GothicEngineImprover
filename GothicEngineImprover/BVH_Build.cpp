@@ -29,7 +29,7 @@ namespace GOTHIC_ENGINE {
 		{
 			middlePoints[axis] = node->bbox.GetMiddleOfAxis(axis);
 
-			for (int i = 0; i < triIndices.size(); ++i)
+			for (size_t i = 0; i < triIndices.size(); ++i)
 			{
 				auto index = triIndices[i];
 				auto center = centersTrias[index];
@@ -68,7 +68,7 @@ namespace GOTHIC_ENGINE {
 
 		float middlePoint = middlePoints[bestAxis];
 
-		for (int i = 0; i < triIndices.size(); ++i)
+		for (size_t i = 0; i < triIndices.size(); ++i)
 		{
 			auto index = triIndices[i];
 			auto center = centersTrias[index];
@@ -205,7 +205,7 @@ namespace GOTHIC_ENGINE {
 		bbox.Init();
 
 		// Для каждого индекса из списка
-		for (int i = 0; i < indices.size(); i++)
+		for (size_t i = 0; i < indices.size(); i++)
 		{
 			int triIdx = indices[i];
 			// Получаем треугольник по индексу
