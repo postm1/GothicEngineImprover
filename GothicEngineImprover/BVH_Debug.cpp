@@ -181,7 +181,7 @@ namespace GOTHIC_ENGINE {
 	void RenderTestCast()
 	{
 
-		if (zinput->KeyPressed(KEY_F9))
+		if (player && !player->inventory2.IsOpen() && !ogame->singleStep && zinput->KeyPressed(KEY_F9))
 		{
 			isOldMethod = !isOldMethod;
 
