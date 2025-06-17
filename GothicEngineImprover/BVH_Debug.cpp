@@ -178,7 +178,7 @@ namespace GOTHIC_ENGINE {
 		}
 	}
 
-	void RenderTestCast()
+	void Raycast_Loop()
 	{
 
 		if (player && !player->inventory2.IsOpen() && !ogame->singleStep && zinput->KeyPressed(KEY_F9))

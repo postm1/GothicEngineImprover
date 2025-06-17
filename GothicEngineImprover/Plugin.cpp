@@ -27,7 +27,7 @@ namespace GOTHIC_ENGINE {
 #if defined(DEF_PERF_APPLY) || defined(DEF_PERF_UPDATE)
       RX_Perf_UpdateFrame();
 #endif
-      RenderTestCast();
+      Raycast_Loop();
   }
 
   void OnLevelFullLoaded()
