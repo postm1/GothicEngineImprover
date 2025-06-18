@@ -16,6 +16,9 @@ namespace GOTHIC_ENGINE {
 		if (bvhTree)
 		{
 			bvhTree->Clear(bvhTree->root);
+
+			delete bvhTree;
+			bvhTree = nullptr;
 		}
 	}
 	void zCSubMeshStruct::BuildMap(zCProgMeshProto* proto, zCProgMeshProto::zCSubMesh* subMeshCurrent)
@@ -85,11 +88,8 @@ namespace GOTHIC_ENGINE {
 
 		if (pTraceMap.find(this) != pTraceMap.end())
 		{
-
-
 			pTraceMap[this].Clear();
 			pTraceMap.erase(this);
-
 			//cmd << "Remove from pTraceMap too. Size: " << pTraceMap.size() << endl;
 		}
 

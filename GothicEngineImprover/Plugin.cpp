@@ -34,11 +34,9 @@ namespace GOTHIC_ENGINE {
   {
       if (OnLevelFullLoaded_Once) return;
 
-      OnLevelFullLoaded_Once = true;
-
-      
-
       RayCastVob_OnLevelLoaded();
+
+      OnLevelFullLoaded_Once = true;
   }
 
 

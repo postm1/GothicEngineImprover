@@ -188,6 +188,8 @@ namespace GOTHIC_ENGINE {
 			BVHNode* node = nodes.top();
 			nodes.pop();
 
+			node->parent = NULL;
+
 			// Добавляем детей в стек
 			if (node->left) nodes.push(node->left);
 			if (node->right) nodes.push(node->right);
@@ -318,7 +320,8 @@ namespace GOTHIC_ENGINE {
 
 		//RX_End(53);
 
-
+		bboxTrias.clear();
+		centersTrias.clear();
 
 		if (showBuildMessage)
 		{
