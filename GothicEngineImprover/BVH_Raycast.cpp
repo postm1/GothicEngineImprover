@@ -8,7 +8,7 @@ namespace GOTHIC_ENGINE {
 	zBOOL TraceBVHNodeStack(const zVEC3& rayOrigin, const zVEC3& rayDir, zCSubMeshStruct* meshEntry)
 	{
 		std::vector<BVHNode*> stack;
-		stack.reserve(meshEntry->bvhTree->nodesCount);  // Предварительное выделение, по кол-ву нодов
+		stack.reserve(64);  // Предварительное выделение, по кол-ву нодов
 
 		stack.push_back(meshEntry->bvhTree->root);
 
@@ -98,6 +98,7 @@ namespace GOTHIC_ENGINE {
 
 #if defined(DEF_PERF_APPLY) || defined(DEF_PERF_UPDATE)
 
+	/*
 	HOOK ivk_zCWorld_TraceRayFirstHit  AS(&zCWorld::TraceRayFirstHit, &zCWorld::TraceRayFirstHit_Union);
 	zBOOL __fastcall zCWorld::TraceRayFirstHit_Union(const zVEC3& rayOrigin, const zVEC3& ray, const zCArray<zCVob*>* ignoreVobList, const int traceFlags)
 	{
@@ -138,6 +139,7 @@ namespace GOTHIC_ENGINE {
 
 		return result;
 	}
+	*/
 
 #endif
 
