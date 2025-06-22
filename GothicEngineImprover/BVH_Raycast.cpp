@@ -99,6 +99,8 @@ namespace GOTHIC_ENGINE {
 	HOOK ivk_zCWorld_TraceRayFirstHit  AS(&zCWorld::TraceRayFirstHit, &zCWorld::TraceRayFirstHit_Union);
 	zBOOL __fastcall zCWorld::TraceRayFirstHit_Union(const zVEC3& rayOrigin, const zVEC3& ray, const zCArray<zCVob*>* ignoreVobList, const int traceFlags)
 	{
+		flagsTraceHistory.push_back(traceFlags);
+
 		RX_Perf_Start("zCWorld::TraceRayFirstHit_Union", PerfType::PERF_TYPE_PER_FRAME);
 
 		auto result = THISCALL(ivk_zCWorld_TraceRayFirstHit)(rayOrigin, ray, ignoreVobList, traceFlags);
@@ -111,6 +113,8 @@ namespace GOTHIC_ENGINE {
 	HOOK ivk_zCWorld_TraceRayNearestHit  AS(&zCWorld::TraceRayNearestHit, &zCWorld::TraceRayNearestHit_Union);
 	zBOOL __fastcall zCWorld::TraceRayNearestHit_Union(const zVEC3& rayOrigin, const zVEC3& ray, const zCArray<zCVob*>* ignoreVobList, const int traceFlags)
 	{
+		flagsTraceHistory.push_back(traceFlags);
+
 		RX_Perf_Start("zCWorld::ivk_zCWorld_TraceRayNearestHit", PerfType::PERF_TYPE_PER_FRAME);
 
 		auto result = THISCALL(ivk_zCWorld_TraceRayNearestHit)(rayOrigin, ray, ignoreVobList, traceFlags);

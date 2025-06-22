@@ -12,6 +12,8 @@ namespace GOTHIC_ENGINE {
   }
   
   void Game_Init() {
+
+      flagsTraceHistory.reserve(1000);
   }
 
   void Game_Exit() {
@@ -23,11 +25,16 @@ namespace GOTHIC_ENGINE {
       globalFrameCounter++;
       visualLoadBVHTimeThisFrame = 0;
 
+      
+     
+
       //cmd << "=========================================" << endl;
 #if defined(DEF_PERF_APPLY) || defined(DEF_PERF_UPDATE)
       RX_Perf_UpdateFrame();
 #endif
       Raycast_Loop();
+
+      flagsTraceHistory.clear();
   }
 
   void OnLevelFullLoaded()

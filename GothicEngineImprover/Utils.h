@@ -124,6 +124,8 @@ namespace GOTHIC_ENGINE {
 	static const Col16 RESET_COLOR(CMD_WHITE); // ÷вет сброса
 	static const Col16 GREEN_COLOR(CMD_GREEN); // ÷вет сброса
 
+	std::vector<int> flagsTraceHistory;
+
 
 	// выводим инфу в консоль
 	void RX_Perf_Print(PerfStruct& entry, const std::string& name) {
@@ -223,6 +225,42 @@ namespace GOTHIC_ENGINE {
 		}
 
 		cmd << endl;
+
+		int stats[15] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+		cmd << flagsTraceHistory.size() << endl;
+
+		for (auto& it : flagsTraceHistory)
+		{
+			stats[0] += (int)(it & zTTraceRayFlags::zTRACERAY_POLY_2SIDED);
+			stats[1] += (int)(it & zTTraceRayFlags::zTRACERAY_POLY_IGNORE_TRANSP);
+			stats[2] += (int)(it & zTTraceRayFlags::zTRACERAY_STAT_IGNORE);
+			stats[3] += (int)(it & zTTraceRayFlags::zTRACERAY_VOB_BBOX);
+			stats[4] += (int)(it & zTTraceRayFlags::zTRACERAY_VOB_IGNORE);
+			stats[5] += (int)(it & zTTraceRayFlags::zTRACERAY_VOB_IGNORE_CHARACTER);
+			stats[6] += (int)(it & zTTraceRayFlags::zTRACERAY_VOB_IGNORE_NO_CD_DYN);
+			stats[7] += (int)(it & zTTraceRayFlags::zTRACERAY_VOB_OBB);
+			stats[8] += (int)(it & zTTraceRayFlags::zTRACERAY_STAT_POLY);
+			stats[9] += (int)(it & zTTraceRayFlags::zTRACERAY_FIRSTHIT);
+
+			stats[10] += (int)(it & zTTraceRayFlags::zTRACERAY_STAT_PORTALS);
+			stats[11] += (int)(it & zTTraceRayFlags::zTRACERAY_POLY_TEST_WATER);
+		}
+
+		cmd << "zTRACERAY_POLY_2SIDED: " << stats[0] << endl;
+		cmd << "zTRACERAY_POLY_IGNORE_TRANSP: " << stats[1] << endl;
+		cmd << "zTRACERAY_STAT_IGNORE: " << stats[2] << endl;
+		cmd << "zTRACERAY_VOB_BBOX: " << stats[3] << endl;
+		cmd << "zTRACERAY_VOB_IGNORE: " << stats[4] << endl;
+		cmd << "zTRACERAY_VOB_IGNORE_CHARACTER: " << stats[5] << endl;
+		cmd << "zTRACERAY_VOB_IGNORE_NO_CD_DYN: " << stats[6] << endl;
+		cmd << "zTRACERAY_VOB_OBB: " << stats[7] << endl;
+		cmd << "zTRACERAY_STAT_POLY: " << stats[8] << endl;
+		cmd << "zTRACERAY_FIRSTHIT: " << stats[9] << endl;
+
+
+		cmd << "zTRACERAY_STAT_PORTALS: " << stats[10] << endl;
+		cmd << "zTRACERAY_POLY_TEST_WATER: " << stats[11] << endl;
 	}
 
 	void RX_Perf_Start_Inner(char* name, PerfType type = PERF_TYPE_PER_ONCE)
