@@ -228,23 +228,30 @@ namespace GOTHIC_ENGINE {
 
 		int stats[15] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-		cmd << flagsTraceHistory.size() << endl;
+		cmd << "=== Trace count: " << flagsTraceHistory.size() << " ===" << endl;
 
 		for (auto& it : flagsTraceHistory)
 		{
-			stats[0] += (int)(it & zTTraceRayFlags::zTRACERAY_POLY_2SIDED);
-			stats[1] += (int)(it & zTTraceRayFlags::zTRACERAY_POLY_IGNORE_TRANSP);
-			stats[2] += (int)(it & zTTraceRayFlags::zTRACERAY_STAT_IGNORE);
-			stats[3] += (int)(it & zTTraceRayFlags::zTRACERAY_VOB_BBOX);
-			stats[4] += (int)(it & zTTraceRayFlags::zTRACERAY_VOB_IGNORE);
-			stats[5] += (int)(it & zTTraceRayFlags::zTRACERAY_VOB_IGNORE_CHARACTER);
-			stats[6] += (int)(it & zTTraceRayFlags::zTRACERAY_VOB_IGNORE_NO_CD_DYN);
-			stats[7] += (int)(it & zTTraceRayFlags::zTRACERAY_VOB_OBB);
-			stats[8] += (int)(it & zTTraceRayFlags::zTRACERAY_STAT_POLY);
-			stats[9] += (int)(it & zTTraceRayFlags::zTRACERAY_FIRSTHIT);
+			stats[0] += (int)(it & zTTraceRayFlags::zTRACERAY_POLY_2SIDED) != 0;
+			stats[1] += (int)(it & zTTraceRayFlags::zTRACERAY_POLY_IGNORE_TRANSP) != 0;
+			stats[2] += (int)(it & zTTraceRayFlags::zTRACERAY_STAT_IGNORE) != 0;
+			stats[3] += (int)(it & zTTraceRayFlags::zTRACERAY_VOB_BBOX) != 0;
+			stats[4] += (int)(it & zTTraceRayFlags::zTRACERAY_VOB_IGNORE) != 0;
+			stats[5] += (int)(it & zTTraceRayFlags::zTRACERAY_VOB_IGNORE_CHARACTER) != 0;
+			stats[6] += (int)(it & zTTraceRayFlags::zTRACERAY_VOB_IGNORE_NO_CD_DYN) != 0;
+			stats[7] += (int)(it & zTTraceRayFlags::zTRACERAY_VOB_OBB) != 0;
+			stats[8] += (int)(it & zTTraceRayFlags::zTRACERAY_STAT_POLY) != 0;
+			stats[9] += (int)(it & zTTraceRayFlags::zTRACERAY_FIRSTHIT) != 0;
 
-			stats[10] += (int)(it & zTTraceRayFlags::zTRACERAY_STAT_PORTALS);
-			stats[11] += (int)(it & zTTraceRayFlags::zTRACERAY_POLY_TEST_WATER);
+			stats[10] += (int)(it & zTTraceRayFlags::zTRACERAY_STAT_PORTALS) != 0;
+			stats[11] += (int)(it & zTTraceRayFlags::zTRACERAY_POLY_TEST_WATER) != 0;
+
+			stats[12] += (int)(it & zTTraceRayFlags::zTRACERAY_POLY_NORMAL) != 0;
+			stats[13] += (int)(it & zTTraceRayFlags::zTRACERAY_VOB_TEST_HELPER_VISUALS) != 0;
+			stats[14] += (int)(it & zTTraceRayFlags::zTRACERAY_VOB_IGNORE_PROJECTILES) != 0;
+			//zTRACERAY_POLY_NORMAL
+			//zTRACERAY_VOB_TEST_HELPER_VISUALS
+			//zTRACERAY_VOB_IGNORE_PROJECTILES
 		}
 
 		cmd << "zTRACERAY_POLY_2SIDED: " << stats[0] << endl;
@@ -261,6 +268,10 @@ namespace GOTHIC_ENGINE {
 
 		cmd << "zTRACERAY_STAT_PORTALS: " << stats[10] << endl;
 		cmd << "zTRACERAY_POLY_TEST_WATER: " << stats[11] << endl;
+
+		cmd << "zTRACERAY_POLY_NORMAL: " << stats[12] << endl;
+		cmd << "zTRACERAY_VOB_TEST_HELPER_VISUALS: " << stats[13] << endl;
+		cmd << "zTRACERAY_VOB_IGNORE_PROJECTILES: " << stats[14] << endl;
 	}
 
 	void RX_Perf_Start_Inner(char* name, PerfType type = PERF_TYPE_PER_ONCE)
@@ -320,7 +331,7 @@ namespace GOTHIC_ENGINE {
 		}
 	}
 
-#define DEF_PERF_APPLY
+//#define DEF_PERF_APPLY
 
 #ifdef DEF_PERF_APPLY
 #define RX_Perf_Start(name, type) RX_Perf_Start_Inner(name, type);
