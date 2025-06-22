@@ -96,6 +96,47 @@ namespace GOTHIC_ENGINE {
 
 	}
 
+	HOOK ivk_zCWorld_TraceRayFirstHit  AS(&zCWorld::TraceRayFirstHit, &zCWorld::TraceRayFirstHit_Union);
+	zBOOL __fastcall zCWorld::TraceRayFirstHit_Union(const zVEC3& rayOrigin, const zVEC3& ray, const zCArray<zCVob*>* ignoreVobList, const int traceFlags)
+	{
+		RX_Perf_Start("zCWorld::TraceRayFirstHit_Union", PerfType::PERF_TYPE_PER_FRAME);
+
+		auto result = THISCALL(ivk_zCWorld_TraceRayFirstHit)(rayOrigin, ray, ignoreVobList, traceFlags);
+
+		RX_Perf_End("zCWorld::TraceRayFirstHit_Union");
+
+		return result;
+	}
+
+	HOOK ivk_zCWorld_TraceRayNearestHit  AS(&zCWorld::TraceRayNearestHit, &zCWorld::TraceRayNearestHit_Union);
+	zBOOL __fastcall zCWorld::TraceRayNearestHit_Union(const zVEC3& rayOrigin, const zVEC3& ray, const zCArray<zCVob*>* ignoreVobList, const int traceFlags)
+	{
+		RX_Perf_Start("zCWorld::ivk_zCWorld_TraceRayNearestHit", PerfType::PERF_TYPE_PER_FRAME);
+
+		auto result = THISCALL(ivk_zCWorld_TraceRayNearestHit)(rayOrigin, ray, ignoreVobList, traceFlags);
+
+		RX_Perf_End("zCWorld::ivk_zCWorld_TraceRayNearestHit");
+
+		return result;
+	}
+
+
+	HOOK ivk_zCVisual_TraceRay  AS(&zCVisual::TraceRay, &zCVisual::TraceRay_Union);
+	zBOOL zCVisual::TraceRay_Union(const zVEC3& rayOrigin, const zVEC3& ray, const int traceFlags, zTTraceRayReport& report)
+	{
+		RX_Perf_Start("zCVisual::TraceRay_Union", PerfType::PERF_TYPE_PER_FRAME);
+
+		auto result = THISCALL(ivk_zCVisual_TraceRay)(rayOrigin, ray, traceFlags, report);
+
+		RX_Perf_End("zCVisual::TraceRay_Union");
+
+		return result;
+	}
+
+	
+
+
+
 
 	HOOK ivk_zCProgMeshProto_TraceRay  AS(&zCProgMeshProto::TraceRay, &zCProgMeshProto::TraceRay_Union);
 	zBOOL zCProgMeshProto::TraceRay_Union(const zVEC3& rayOrigin, const zVEC3& ray, const int traceFlags, zTTraceRayReport& report)
