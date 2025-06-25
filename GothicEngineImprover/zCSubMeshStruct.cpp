@@ -218,78 +218,11 @@ namespace GOTHIC_ENGINE {
 		}
 
 
-		/*
-		// 1. ѕереносим элементы в вектор дл€ сортировки
-		std::vector<std::pair<zCProgMeshProto::zCSubMesh*, zCProgMeshProto*>> sortedSubmeshes(
-			bigSubmeshes.begin(),
-			bigSubmeshes.end()
-		);
-
-		// 2. —ортируем по количеству полигонов (от большего к меньшему)
-		std::sort(
-			sortedSubmeshes.begin(),
-			sortedSubmeshes.end(),
-			[](const auto& a, const auto& b) {
-				return a.first->triList.GetNum() > b.first->triList.GetNum();
-			}
-		);
-		*/
-
 		pTraceMap.reserve(bigSubmeshes.size() * 2);
 
 		//cmd << "ProcessAllSubMeshesParallel" << endl;
 
 		ProcessAllSubMeshesParallel(bigSubmeshes, pTraceMap);
-
-		/*
-		// 3. “еперь итерируемс€ по отсортированному списку
-		for (const auto& it : bigSubmeshes)
-		{
-			auto* submesh = it.first;
-			auto* meshProto = it.second;
-
-			if (submesh && meshProto)
-			{
-				if (pTraceMap.find(submesh) == pTraceMap.end())
-				{
-
-					RX_Begin(55);
-
-					zCSubMeshStruct collEntry;
-
-					collEntry.BuildMap(meshProto, submesh);
-
-					pTraceMap[submesh] = collEntry;
-
-					RX_End(55);
-
-					timeRequires += perf[55];
-
-				}
-			}
-		}
-		*/
-
-
-
-		/*
-
-		RX_Begin(55);
-
-
-									RX_End(55);
-
-									timeRequires += perf[55];
-
-									// if it require > 100 ms to load => load it later
-									if ((timeRequires / 1000.0f) >= 10)
-									{
-										cmd << "STOP LONG TIME" << endl;
-										flagStop = true;
-										break;
-									}
-		*/
-
 
 		RX_End(54);
 
