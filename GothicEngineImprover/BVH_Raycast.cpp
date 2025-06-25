@@ -27,6 +27,8 @@ namespace GOTHIC_ENGINE {
 
 			stack.pop_back();
 
+			//globalStackDepth = max(globalStackDepth, stack.size());
+
 			raycastReport.NodeTreeCheckCounter++;
 			tmin = tmax = 1.0f;
 
@@ -91,6 +93,10 @@ namespace GOTHIC_ENGINE {
 		{
 			raycastReport.globalSubmeshBestNew = meshEntry->subMesh;
 		}
+
+		/*cmd << "Nodes: " << raycastReport.NodeTreeCheckCounter
+			<< " Tris: " << raycastReport.TrisTreeCheckCounter << "/" << meshEntry->subMesh->triList.GetNum()
+			<< endl;*/
 
 		return result;
 
@@ -250,10 +256,7 @@ namespace GOTHIC_ENGINE {
 				raycastReport.hitFoundGlobal |= TraceRayBVH(rayOrigin, ray, &it->second);
 
 
-				/*cmd << "NodeTreeCheckCounter: " << NodeTreeCheckCounter
-					<< " SubMeshTris: " << subMesh->triList.GetNum()
-					<< " TrisTreeCheckCounter: " << TrisTreeCheckCounter
-					<< endl;*/
+
 
 				/*
 				for (int i = 0; i < subMesh->triList.GetNum(); i++)

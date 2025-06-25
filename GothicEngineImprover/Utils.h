@@ -115,6 +115,7 @@ namespace GOTHIC_ENGINE {
 	int globalFrameCounter = 0;
 	int globalPerfId = 0;
 	int textLevelCurrent = 0;
+	int globalStackDepth = 0;
 
 	std::map<std::string, PerfStruct> perfArray;
 
@@ -198,6 +199,7 @@ namespace GOTHIC_ENGINE {
 		}
 		cmd << WARNING_COLOR << "================= TIMERS PERF INFO =================================================" << NORMAL_COLOR << endl;
 
+		cmd << "GlobalStackMaxSize: " << globalStackDepth << endl;
 
 		std::vector<std::reference_wrapper<std::pair<const std::string, PerfStruct>>> sortedEntries;
 		for (auto& pair : perfArray) {
@@ -331,7 +333,7 @@ namespace GOTHIC_ENGINE {
 		}
 	}
 
-#define DEF_PERF_APPLY
+//#define DEF_PERF_APPLY
 
 #ifdef DEF_PERF_APPLY
 #define RX_Perf_Start(name, type) RX_Perf_Start_Inner(name, type);
