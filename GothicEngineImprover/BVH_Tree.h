@@ -43,7 +43,7 @@ namespace GOTHIC_ENGINE {
 
 		void Build(zCProgMeshProto* proto, zCProgMeshProto::zCSubMesh* subMesh);
 		BVHNode* BuildNode(BVHNode* parent, std::vector<int>& triIndices, int depth = 0, bool isDebug = false);
-		void Clear(BVHNode*& root);
+		void DestroyTree(BVHNode*& root);
 
 		// DEBUG FUNCS
 

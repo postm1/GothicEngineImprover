@@ -44,6 +44,8 @@ namespace GOTHIC_ENGINE {
       RayCastVob_OnLevelLoaded();
 
       OnLevelFullLoaded_Once = true;
+
+      //cmd << "RAM #2: " << RAMUsed() / 1000 << endl;
   }
 
 

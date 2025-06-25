@@ -174,7 +174,7 @@ namespace GOTHIC_ENGINE {
 		return node;
 	}
 
-	void BVH_Tree::Clear(BVHNode*& root)
+	void BVH_Tree::DestroyTree(BVHNode*& root)
 	{
 		if (!root) return;
 
@@ -194,8 +194,6 @@ namespace GOTHIC_ENGINE {
 			if (node->left) nodes.push(node->left);
 			if (node->right) nodes.push(node->right);
 
-			// Очищаем узел
-			node->triIndices.clear();
 			delete node;
 		}
 	}

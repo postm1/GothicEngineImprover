@@ -15,7 +15,7 @@ namespace GOTHIC_ENGINE {
 	{
 		if (bvhTree)
 		{
-			bvhTree->Clear(bvhTree->root);
+			bvhTree->DestroyTree(bvhTree->root);
 
 			delete bvhTree;
 			bvhTree = nullptr;
@@ -205,32 +205,44 @@ namespace GOTHIC_ENGINE {
 
 	void RayCastVob_OnLevelLoaded()
 	{
+		//cmd << "RAM #1: " << RAMUsed() / 1000 << endl;
+
 		RX_Begin(54);
 		zCArray<zCVob*> arrVobs;
 
+		
+		cmd << "OnLoadedSize: " << pTraceMap.size() << endl;
 
-		for (auto& pair : pTraceMap) 
+		for (auto& pair : pTraceMap)
+		{
+			if (pair.second.parentProto)
+			{
+				cmd << pair.second.parentProto->GetVisualName() << endl;
+			}
+			
+		}
+
+		//Message::Box("SHOW");
+
+		/*for (auto& pair : pTraceMap) 
 		{
 			pair.second.Clear();  
 		}
 
-		pTraceMap.clear(); 
+		pTraceMap.clear();*/
 
 		ogame->GetWorld()->SearchVobListByBaseClass(zCVob::classDef, arrVobs, NULL);
 
 		//cmd << "Input: " << arrVobs.GetNumInList() << endl;
 
 		double timeRequires = 0;
-		bool flagStop = false;
 
 		std::unordered_map<zCProgMeshProto::zCSubMesh*, zCProgMeshProto*> bigSubmeshes;
 
 		bigSubmeshes.reserve(1000);
 
-		// »щем сначала все визуалы с большим кол-вом поликов
 		for (int i = 0; i < arrVobs.GetNumInList(); i++)
 		{
-			if (flagStop) break;
 
 			if (auto pVob = arrVobs.GetSafe(i))
 			{
@@ -244,7 +256,7 @@ namespace GOTHIC_ENGINE {
 							{
 								zCProgMeshProto::zCSubMesh* subMesh = &(pProto->subMeshList[s]);
 
-								if (subMesh && subMesh->triList.GetNum() >= 0)
+								if (subMesh && subMesh->triList.GetNum() >= 0 && pTraceMap.find(subMesh) == pTraceMap.end())
 								{
 									if (bigSubmeshes.find(subMesh) == bigSubmeshes.end())
 									{
@@ -260,7 +272,7 @@ namespace GOTHIC_ENGINE {
 		}
 
 
-		pTraceMap.reserve(bigSubmeshes.size() * 2);
+		pTraceMap.reserve(bigSubmeshes.size());
 
 		//cmd << "ProcessAllSubMeshesParallel" << endl;
 
@@ -268,7 +280,12 @@ namespace GOTHIC_ENGINE {
 
 		RX_End(54);
 
+		cmd << "NewObjects: " << bigSubmeshes.size() << endl;
 		cmd << "RaycastVobs build time: " << RX_PerfString(54) << " Size: " << pTraceMap.size() << endl;
+
+		
+
+		
 
 		cmd << "-----------------\n" << endl;
 	}

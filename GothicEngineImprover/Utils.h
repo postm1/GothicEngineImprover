@@ -109,6 +109,16 @@ namespace GOTHIC_ENGINE {
 		return  zSTRING(perf[index] / 1e6, 10) + zSTRING(" ms");
 	}
 
+	int RAMUsed() {
+		int nRam;
+
+		PROCESS_MEMORY_COUNTERS pmc;
+
+		GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
+		nRam = pmc.WorkingSetSize / 1000;
+		return nRam;
+	}
+
 	bool OnLevelFullLoaded_Once = false;
 	double visualLoadBVHTimeThisFrame = 0.0f;
 	bool bShowPerfTimers = true;
