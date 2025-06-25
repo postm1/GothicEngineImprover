@@ -80,11 +80,53 @@ namespace GOTHIC_ENGINE {
 		}
 	}
 
+	constexpr size_t SIZEOF_zTPlane = sizeof(zTPlane);            // 0x10 (16  байт)
+	constexpr size_t SIZEOF_zTPMWedge = sizeof(zTPMWedge);          // 0x18 (24  байта)
+	constexpr size_t SIZEOF_zTPMTriangle = sizeof(zTPMTriangle);       // 0x06 (6   байт)
+	constexpr size_t SIZEOF_zTPMTriangleEdges = sizeof(zTPMTriangleEdges);  // 0x06 (6   байт)
+	constexpr size_t SIZEOF_zTPMEdge = sizeof(zTPMEdge);           // 0x04 (4   байта)
+	constexpr size_t SIZEOF_zTPMVertexUpdate = sizeof(zTPMVertexUpdate);   // 0x04 (4   байта)
 
+	inline std::size_t CalcSubMeshSizeBytes(const zCProgMeshProto::zCSubMesh& m)
+	{
+		std::size_t total = 0;
+
+		// 1. Фиксированные поля самой структуры -------------------
+		total += sizeof(m.material);      // указатель на материал (4 байта)
+		total += sizeof(m.vbStartIndex);  // int (4 байта)
+
+		// 2. Динамические массивы ---------------------------------
+		total += m.triList.GetNum() * SIZEOF_zTPMTriangle;
+		total += m.wedgeList.GetNum() * SIZEOF_zTPMWedge;
+		total += m.colorList.GetNum() * sizeof(float);
+		total += m.triPlaneIndexList.GetNum() * sizeof(unsigned short);
+		total += m.triPlaneList.GetNum() * SIZEOF_zTPlane;
+		total += m.triEdgeList.GetNum() * SIZEOF_zTPMTriangleEdges;
+		total += m.edgeList.GetNum() * SIZEOF_zTPMEdge;
+		total += m.edgeScoreList.GetNum() * sizeof(float);
+		total += m.wedgeMap.GetNum() * sizeof(unsigned short);
+		total += m.vertexUpdates.GetNum() * SIZEOF_zTPMVertexUpdate;
+
+		return total;
+	}
+
+	inline double CalcSubMeshSizeKB(const zCProgMeshProto::zCSubMesh& m)
+	{
+		return static_cast<double>(CalcSubMeshSizeBytes(m)) / 1000.0f;
+	}
+
+	
 	HOOK ivk_zCSubMesh_Destructor AS(&zCProgMeshProto::zCSubMesh::~zCSubMesh, &zCProgMeshProto::zCSubMesh::DestrUnion);
 	void zCProgMeshProto::zCSubMesh::DestrUnion()
 	{
-		//cmd << "### zCSubMesh Remove: " << this->triList.GetNum() << endl;
+		/*
+		float size = CalcSubMeshSizeKB(*this);
+
+		sizeUnloatDestr += size;
+
+		cmd << "### zCSubMesh Remove: " << this->triList.GetNum() << " Size: " << size << " KB | Total: " << sizeUnloatDestr << endl;
+
+		*/
 
 		if (pTraceMap.find(this) != pTraceMap.end())
 		{
@@ -93,7 +135,7 @@ namespace GOTHIC_ENGINE {
 			//cmd << "Remove from pTraceMap too. Size: " << pTraceMap.size() << endl;
 		}
 
-		//THISCALL(ivk_zCSubMesh_Destructor)();
+		THISCALL(ivk_zCSubMesh_Destructor)();
 	}
 
 

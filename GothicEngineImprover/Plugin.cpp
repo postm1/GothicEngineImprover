@@ -70,6 +70,8 @@ namespace GOTHIC_ENGINE {
 
   void LoadBegin() {
       OnLevelFullLoaded_Once = false;
+
+      sizeUnloatDestr = 0;
   }
 
   void LoadEnd() {

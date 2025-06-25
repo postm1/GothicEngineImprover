@@ -116,6 +116,7 @@ namespace GOTHIC_ENGINE {
 	int globalPerfId = 0;
 	int textLevelCurrent = 0;
 	int globalStackDepth = 0;
+	float sizeUnloatDestr = 0.0f;
 
 	std::map<std::string, PerfStruct> perfArray;
 
