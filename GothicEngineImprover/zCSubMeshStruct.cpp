@@ -213,14 +213,14 @@ namespace GOTHIC_ENGINE {
 		
 		cmd << "OnLoadedSize: " << pTraceMap.size() << endl;
 
-		for (auto& pair : pTraceMap)
+		/*for (auto& pair : pTraceMap)
 		{
 			if (pair.second.parentProto)
 			{
 				cmd << pair.second.parentProto->GetVisualName() << endl;
 			}
 			
-		}
+		}*/
 
 		//Message::Box("SHOW");
 
@@ -273,6 +273,7 @@ namespace GOTHIC_ENGINE {
 
 
 		pTraceMap.reserve(bigSubmeshes.size());
+		
 
 		//cmd << "ProcessAllSubMeshesParallel" << endl;
 
