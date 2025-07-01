@@ -32,9 +32,9 @@ namespace GOTHIC_ENGINE {
 #if defined(DEF_PERF_APPLY) || defined(DEF_PERF_UPDATE)
       RX_Perf_UpdateFrame();
 #endif
-      Raycast_Loop();
+      //Raycast_Loop();
 
-      flagsTraceHistory.clear();
+      //flagsTraceHistory.clear();
   }
 
   void OnLevelFullLoaded()
