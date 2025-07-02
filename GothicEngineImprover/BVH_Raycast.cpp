@@ -209,7 +209,7 @@ namespace GOTHIC_ENGINE {
 
 			const zCMaterial* mat = subMesh->material;
 
-			if (mat->noCollDet) continue;
+			
 
 			// Traceflags: zTRACERAY_POLY_TEST_WATER, zTRACERAY_POLY_IGNORE_TRANSP
 			if (mat->matGroup == zMAT_GROUP_WATER) {
@@ -222,8 +222,8 @@ namespace GOTHIC_ENGINE {
 				};
 			};
 
-
-			raycastReport.subMeshesFound.push_back(subMesh);
+			if (mat->GetNoCollDet()) continue;
+			//raycastReport.subMeshesFound.push_back(subMesh);
 
 
 			auto& it = pTraceMap.find(subMesh);
