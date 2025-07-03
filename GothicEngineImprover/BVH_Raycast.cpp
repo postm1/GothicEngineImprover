@@ -7,10 +7,10 @@ namespace GOTHIC_ENGINE {
 
 	zBOOL TraceBVHNodeStack(const zVEC3& rayOrigin, const zVEC3& rayDir, zCSubMeshStruct* meshEntry)
 	{
-		std::vector<BVHNode*> stack;
-		stack.reserve(64);  // Предварительное выделение, по кол-ву нодов
+		BVHNode* stack[100];  // Статический стек с запасом
+		int stackPtr = 0;    // Указатель на вершину стека
 
-		stack.push_back(meshEntry->bvhTree->root);
+		stack[stackPtr++] = meshEntry->bvhTree->root;  // Помещаем корень
 
 
 		zBOOL hitFound = FALSE;
@@ -21,16 +21,14 @@ namespace GOTHIC_ENGINE {
 		auto proto = meshEntry->parentProto;
 		auto subMesh = meshEntry->subMesh;
 
-		while (!stack.empty())
+		while (stackPtr > 0)
 		{
-			BVHNode* node = stack.back();
-
-			stack.pop_back();
+			BVHNode* node = stack[--stackPtr];  // Быстрый pop
 
 			//globalStackDepth = max(globalStackDepth, stack.size());
 
-			raycastReport.NodeTreeCheckCounter++;
-			tmin = tmax = 1.0f;
+			//raycastReport.NodeTreeCheckCounter++;
+			//tmin = tmax = 1.0f;
 
 			// Проверка пересечения луча с AABB узла (с учетом bestAlpha для early-out)
 			if (!(node->bbox.IsIntersecting(rayOrigin, rayDir, tmin, tmax) && tmax >= 0.0f && tmin <= 1.0f))
@@ -46,7 +44,7 @@ namespace GOTHIC_ENGINE {
 			// Проверка пересечения с треугольниками в листе
 			for (int triIdx : node->triIndices)
 			{
-				raycastReport.TrisTreeCheckCounter++;
+				//raycastReport.TrisTreeCheckCounter++;
 
 
 
@@ -74,9 +72,9 @@ namespace GOTHIC_ENGINE {
 			}
 
 
-			// Добавляем дочерние узлы в стек (сначала правый, потом левый)
-			if (node->right) stack.push_back(node->right);
-			if (node->left)  stack.push_back(node->left);
+			// Добавляем дочерние узлы в стек (правый -> левый для DFS)
+			if (node->right) stack[stackPtr++] = node->right;
+			if (node->left)  stack[stackPtr++] = node->left;
 
 		}
 
@@ -209,7 +207,7 @@ namespace GOTHIC_ENGINE {
 
 			const zCMaterial* mat = subMesh->material;
 
-			
+			if (mat->noCollDet) continue;
 
 			// Traceflags: zTRACERAY_POLY_TEST_WATER, zTRACERAY_POLY_IGNORE_TRANSP
 			if (mat->matGroup == zMAT_GROUP_WATER) {
@@ -222,7 +220,7 @@ namespace GOTHIC_ENGINE {
 				};
 			};
 
-			if (mat->GetNoCollDet()) continue;
+			
 			//raycastReport.subMeshesFound.push_back(subMesh);
 
 
