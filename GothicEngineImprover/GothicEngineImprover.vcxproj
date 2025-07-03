@@ -908,10 +908,6 @@ $(ALLUSERSPROFILE)\Union\SDK\Union\v1.0m\Build\incver.exe $(ProjectDir)</Command
     <ClInclude Include="Plugin.h" />
     <ClInclude Include="Headers.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="Sayans.cpp">
-      <SubType>
-      </SubType>
-    </ClInclude>
     <ClInclude Include="Sources.h" />
     <ClInclude Include="SubmeshStructure.h">
       <SubType>

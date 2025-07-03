@@ -2802,9 +2802,6 @@
     <ClInclude Include="zCSubMeshStruct.cpp">
       <Filter>Plugin\Workspace\Plugin\Raycast_Optimize</Filter>
     </ClInclude>
-    <ClInclude Include="Sayans.cpp">
-      <Filter>Plugin\Workspace\Plugin\Raycast_Optimize</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".build_settings.inl">
