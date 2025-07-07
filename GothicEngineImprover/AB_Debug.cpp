@@ -478,6 +478,8 @@ namespace GOTHIC_ENGINE {
 
 	void AB_Debug::CleanLines()
 	{
+		cmd << "Clean Lines" << endl;
+
 		pListPoints.DeleteListDatas();
 	}
 

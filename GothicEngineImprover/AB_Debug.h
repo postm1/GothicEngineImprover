@@ -38,7 +38,7 @@ namespace GOTHIC_ENGINE {
 		zSTRING fileName;
 		zSTRING fileNameABLog;
 		int level;
-		bool showTraceLines;
+		bool showTraceLines = true;
 	public:
 		bool canWriteZSpy;
 		zCView* viewText;

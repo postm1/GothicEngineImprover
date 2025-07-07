@@ -90,7 +90,7 @@ namespace GOTHIC_ENGINE {
 	void ShowVisualCollisionReport(zCProgMeshProto* proto, const zVEC3& rayOrigin, const zVEC3& ray, int time, zTTraceRayReport& report, int bestTriIndex, zTPlane* bestPlane)
 	{
 
-		/*
+		
 		debug.AddRay(rayOrigin, rayOrigin + ray, zCOLOR(253, 134, 50), time); // сам тестовый луч
 		debug.AddSphere(report.foundIntersection, 2.0, GFX_RED, time, false); // пересечение
 
@@ -108,7 +108,7 @@ namespace GOTHIC_ENGINE {
 		{
 			debug.AddPlane(bestPlane, 200, zCOLOR(55, 253, 243), time, 0, Z "Plane", Z "Plane");
 		}
-		*/
+		
 	}
 
 	void ShowVisualCollisionReportNew(zCProgMeshProto* proto, const zVEC3& rayOrigin, const zVEC3& ray, int time, bool hitFoundGlobal, bool separate = false)
@@ -121,10 +121,10 @@ namespace GOTHIC_ENGINE {
 		if (separate)
 		{
 			// розовый луч
-			//debug.AddRay(rayOrigin, rayOrigin + ray, zCOLOR(253, 89, 196), time); // сам тестовый луч
+			debug.AddRay(rayOrigin, rayOrigin + ray, zCOLOR(253, 89, 196), time); // сам тестовый луч
 		}
 
-		//debug.AddSphere(raycastReport.intersGlobal, 2.0, GFX_GREEN, time, false); // пересечение
+		debug.AddSphere(raycastReport.intersGlobal, 2.0, GFX_GREEN, time, false); // пересечение
 
 		if (raycastReport.globalSubmeshBestNew)
 		{
@@ -136,12 +136,12 @@ namespace GOTHIC_ENGINE {
 
 		if (separate)
 		{
-			//debug.AddAxis(zVEC3(0, 0, 0), 200, time);
+			debug.AddAxis(zVEC3(0, 0, 0), 200, time);
 		}
 
 		if (raycastReport.foundPlaneGlobal)
 		{
-			//debug.AddPlane(raycastReport.foundPlaneGlobal, 200, zCOLOR(255, 65, 128), time, 0, Z "PlaneNew", Z "PlaneNew");
+			debug.AddPlane(raycastReport.foundPlaneGlobal, 200, zCOLOR(255, 65, 128), time, 0, Z "PlaneNew", Z "PlaneNew");
 		}
 	}
 
@@ -176,6 +176,36 @@ namespace GOTHIC_ENGINE {
 				break;
 			}
 		}
+	}
+
+	void DrawObjectBVH(BVH_Tree* tree, BVHNode* node, int time)
+	{
+		if (!tree || !node) return;
+
+		zCProgMeshProto* proto = tree->proto;
+
+		cmd << "Draw: " << proto->GetVisualName() << endl;
+
+		for (int s = 0; s < proto->numSubMeshes; s++)
+		{
+			zCProgMeshProto::zCSubMesh* it = &(proto->subMeshList[s]);
+
+			if (!it) continue;
+			if (it->triPlaneList.GetNum() <= 0) continue;
+
+			for (int i = 0; i < it->triList.GetNum(); i++)
+			{
+				const zVEC3& pos0 = proto->posList[it->wedgeList[it->triList[i].wedge[0]].position];
+				const zVEC3& pos1 = proto->posList[it->wedgeList[it->triList[i].wedge[1]].position];
+				const zVEC3& pos2 = proto->posList[it->wedgeList[it->triList[i].wedge[2]].position];
+
+				zCOLOR col = GFX_WHITE;
+
+				debug.AddTriangle(pos0, pos1, pos2, col, time);
+			}
+
+		}
+		
 	}
 
 	void Raycast_Loop()
