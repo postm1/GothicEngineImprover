@@ -135,14 +135,6 @@ namespace GOTHIC_ENGINE {
 			node->triIndices.assign(input.begin(), input.begin() + size);
 		}
 
-		/*if (node->triIndices.size() >= 50 && !showModel)
-		{
-			showModel = true;
-
-			DrawObjectBVH(this, node, 1150*1000);
-			
-		}*/
-
 		bvhDebug.triasCheckerCount += size;
 	}
 

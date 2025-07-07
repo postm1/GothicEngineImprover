@@ -23,14 +23,15 @@ namespace GOTHIC_ENGINE {
 
 		while (stackPtr > 0)
 		{
-			BVHNode* node = stack[--stackPtr];  // Быстрый pop
+			BVHNode* node = stack[--stackPtr];
 
 #if defined(DEBUG_BUILD_BVH)
 			globalStackDepth = max(globalStackDepth, stackPtr);
+			raycastReport.NodeTreeCheckCounter++;
+			tmin = tmax = 1.0f;
 #endif
 
-			//raycastReport.NodeTreeCheckCounter++;
-			//tmin = tmax = 1.0f;
+			
 
 			// Проверка пересечения луча с AABB узла (с учетом bestAlpha для early-out)
 			if (!(node->bbox.IsIntersecting(rayOrigin, rayDir, tmin, tmax) && tmax >= 0.0f && tmin <= 1.0f))
@@ -46,8 +47,9 @@ namespace GOTHIC_ENGINE {
 			// Проверка пересечения с треугольниками в листе
 			for (int triIdx : node->triIndices)
 			{
+#if defined(DEBUG_BUILD_BVH)
 				//raycastReport.TrisTreeCheckCounter++;
-
+#endif
 
 
 				if (proto->CheckRayPolyIntersection(subMesh, triIdx, rayOrigin, rayDir, inters, alpha))

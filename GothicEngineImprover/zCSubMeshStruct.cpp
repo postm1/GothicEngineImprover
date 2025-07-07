@@ -217,25 +217,7 @@ namespace GOTHIC_ENGINE {
 		zCArray<zCVob*> arrVobs;
 
 		
-		cmd << "OnLoadedSize: " << pTraceMap.size() << endl;
-
-		/*for (auto& pair : pTraceMap)
-		{
-			if (pair.second.parentProto)
-			{
-				cmd << pair.second.parentProto->GetVisualName() << endl;
-			}
-			
-		}*/
-
-		//Message::Box("SHOW");
-
-		/*for (auto& pair : pTraceMap) 
-		{
-			pair.second.Clear();  
-		}
-
-		pTraceMap.clear();*/
+		cmd << "OnLoadedSize pTraceMap: " << pTraceMap.size() << endl;
 
 		ogame->GetWorld()->SearchVobListByBaseClass(zCVob::classDef, arrVobs, NULL);
 
@@ -245,7 +227,7 @@ namespace GOTHIC_ENGINE {
 
 		std::unordered_map<zCProgMeshProto::zCSubMesh*, zCProgMeshProto*> submeshesFound;
 
-		submeshesFound.reserve(1000);
+		submeshesFound.reserve(2000);
 
 		for (int i = 0; i < arrVobs.GetNumInList(); i++)
 		{
@@ -289,10 +271,6 @@ namespace GOTHIC_ENGINE {
 
 		cmd << "Submeshes Found: " << submeshesFound.size() << endl;
 		cmd << "RaycastVobs build time: " << RX_PerfString(54) << " Size: " << pTraceMap.size() << endl;
-
-		
-
-		
 
 		cmd << "-----------------\n" << endl;
 	}
