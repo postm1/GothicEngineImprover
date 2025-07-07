@@ -170,7 +170,13 @@ namespace GOTHIC_ENGINE {
 		std::unordered_map<zCProgMeshProto::zCSubMesh*, zCSubMeshStruct>& pTraceMap
 	) {
 		const size_t totalItems = bigSubmeshes.size();
+
+#if defined(DEBUG_BUILD_BVH)
+		const unsigned int maxThreads = 1;
+#else
 		const unsigned int maxThreads = std::thread::hardware_concurrency();
+#endif
+		
 		const size_t itemsPerThread = (totalItems + maxThreads - 1) / maxThreads;
 
 		// 1. Каждый поток работает со своим локальным результатом
@@ -237,9 +243,9 @@ namespace GOTHIC_ENGINE {
 
 		double timeRequires = 0;
 
-		std::unordered_map<zCProgMeshProto::zCSubMesh*, zCProgMeshProto*> bigSubmeshes;
+		std::unordered_map<zCProgMeshProto::zCSubMesh*, zCProgMeshProto*> submeshesFound;
 
-		bigSubmeshes.reserve(1000);
+		submeshesFound.reserve(1000);
 
 		for (int i = 0; i < arrVobs.GetNumInList(); i++)
 		{
@@ -258,9 +264,9 @@ namespace GOTHIC_ENGINE {
 
 								if (subMesh && subMesh->triList.GetNum() >= 0 && pTraceMap.find(subMesh) == pTraceMap.end())
 								{
-									if (bigSubmeshes.find(subMesh) == bigSubmeshes.end())
+									if (submeshesFound.find(subMesh) == submeshesFound.end())
 									{
-										bigSubmeshes[subMesh] = pProto;
+										submeshesFound[subMesh] = pProto;
 									}
 								}
 							}
@@ -272,16 +278,16 @@ namespace GOTHIC_ENGINE {
 		}
 
 
-		pTraceMap.reserve(bigSubmeshes.size());
+		pTraceMap.reserve(submeshesFound.size());
 		
 
 		//cmd << "ProcessAllSubMeshesParallel" << endl;
 
-		ProcessAllSubMeshesParallel(bigSubmeshes, pTraceMap);
+		ProcessAllSubMeshesParallel(submeshesFound, pTraceMap);
 
 		RX_End(54);
 
-		cmd << "NewObjects: " << bigSubmeshes.size() << endl;
+		cmd << "Submeshes Found: " << submeshesFound.size() << endl;
 		cmd << "RaycastVobs build time: " << RX_PerfString(54) << " Size: " << pTraceMap.size() << endl;
 
 		

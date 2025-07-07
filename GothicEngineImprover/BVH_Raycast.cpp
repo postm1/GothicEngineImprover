@@ -25,7 +25,7 @@ namespace GOTHIC_ENGINE {
 		{
 			BVHNode* node = stack[--stackPtr];  // ֱûסענûי pop
 
-			//globalStackDepth = max(globalStackDepth, stack.size());
+			globalStackDepth = max(globalStackDepth, stackPtr);
 
 			//raycastReport.NodeTreeCheckCounter++;
 			//tmin = tmax = 1.0f;

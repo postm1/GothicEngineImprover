@@ -184,7 +184,7 @@ namespace GOTHIC_ENGINE {
 
 		zCProgMeshProto* proto = tree->proto;
 
-		cmd << "Draw: " << proto->GetVisualName() << endl;
+		//cmd << "Draw: " << proto->GetVisualName() << " size: " << node->triIndices.size() << endl;
 
 		for (int s = 0; s < proto->numSubMeshes; s++)
 		{
@@ -195,11 +195,21 @@ namespace GOTHIC_ENGINE {
 
 			for (int i = 0; i < it->triList.GetNum(); i++)
 			{
+
+				bool contains = (std::find(node->triIndices.begin(), node->triIndices.end(), i) != node->triIndices.end());
+
+				zCOLOR col = GFX_WHITE;
+
+				if (contains)
+				{
+					col = GFX_RED;
+				};
+
 				const zVEC3& pos0 = proto->posList[it->wedgeList[it->triList[i].wedge[0]].position];
 				const zVEC3& pos1 = proto->posList[it->wedgeList[it->triList[i].wedge[1]].position];
 				const zVEC3& pos2 = proto->posList[it->wedgeList[it->triList[i].wedge[2]].position];
 
-				zCOLOR col = GFX_WHITE;
+				
 
 				debug.AddTriangle(pos0, pos1, pos2, col, time);
 			}

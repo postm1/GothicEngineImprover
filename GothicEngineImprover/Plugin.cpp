@@ -34,18 +34,32 @@ namespace GOTHIC_ENGINE {
 #if defined(DEF_PERF_APPLY) || defined(DEF_PERF_UPDATE)
       RX_Perf_UpdateFrame();
 #endif
+
+#if defined(DEBUG_BUILD_BVH)
       Raycast_Loop();
+#endif
+
+      ClearPrintDebug();
 
       //flagsTraceHistory.clear();
+
+     
   }
 
   void OnLevelFullLoaded()
   {
       if (OnLevelFullLoaded_Once) return;
 
+
+      showModel = false;
+
+      debug.CleanLines();
+
       RayCastVob_OnLevelLoaded();
 
       OnLevelFullLoaded_Once = true;
+
+      
 
       //cmd << "RAM #2: " << RAMUsed() / 1000 << endl;
   }
@@ -55,7 +69,11 @@ namespace GOTHIC_ENGINE {
       
       OnLevelFullLoaded();
       
+#if defined(DEBUG_BUILD_BVH)
       debug.Loop();
+      PrintDebug("globalStackDepth: " + Z globalStackDepth);
+
+#endif
   }
 
   void Game_PostLoop() {

@@ -82,9 +82,28 @@ namespace GOTHIC_ENGINE {
 				right.push_back(index);
 			}
 		}
+
+		// Если разделение не удалось (все элементы в одной группе)
+		if (left.empty() || right.empty())
+		{
+			left.clear();
+			right.clear();
+
+			
+			// Альтернативный метод: сортируем и делим пополам
+			std::sort(triIndices.begin(), triIndices.end(), [&](int a, int b) {
+				return centersTrias[a].n[bestAxis] < centersTrias[b].n[bestAxis];
+				});
+
+			size_t half = triIndices.size() / 2;
+			left.insert(left.end(), triIndices.begin(), triIndices.begin() + half);
+			right.insert(right.end(), triIndices.begin() + half, triIndices.end());
+
+			cmd << "SPLIT CENTER: " << triIndices.size() << " -> " << left.size() << " | " << right.size() << endl;
+		}
 	}
 
-	bool showModel = false;
+	
 
 	void BVH_Tree::AddAllTriangles(BVHNode* node, std::vector<int>& input, bool isDebug)
 	{
@@ -116,11 +135,11 @@ namespace GOTHIC_ENGINE {
 			node->triIndices.assign(input.begin(), input.begin() + size);
 		}
 
-		if (node->triIndices.size() >= 10 && !showModel)
+		if (node->triIndices.size() >= 50 && !showModel)
 		{
 			showModel = true;
 
-			DrawObjectBVH(this, node, 150*1000);
+			DrawObjectBVH(this, node, 1150*1000);
 			
 		}
 
@@ -164,18 +183,11 @@ namespace GOTHIC_ENGINE {
 
 		//if (isDebug) cmd << triIndices.size() << " -> " << leftIndices.size() << " | " << rightIndices.size() << endl;
 
-		if (triIndices.size() == rightIndices.size())
+		if (triIndices.size() == rightIndices.size() || triIndices.size() == leftIndices.size())
 		{
 			AddAllTriangles(node, triIndices, isDebug);
 			return node;
 		}
-
-		if (triIndices.size() == leftIndices.size())
-		{
-			AddAllTriangles(node, triIndices, isDebug);
-			return node;
-		}
-
 
 		node->left = BuildNode(node, leftIndices, 0, isDebug);
 		node->right = BuildNode(node, rightIndices, 0, isDebug);

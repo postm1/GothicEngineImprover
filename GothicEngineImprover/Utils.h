@@ -35,6 +35,13 @@ namespace GOTHIC_ENGINE {
 #define Alg_Deg2Rad(rad) (zREAL(zREAL(rad)*zREAL(M_PI)/zREAL(180.0f)))
 #define ToRadians(f) ((f) * M_PI / 180.0)
 #define ToDegrees(f) ((f) * 180.0 / M_PI)
+#define FACTOR 81.919998
+#define F(a) a * FACTOR			// 8
+
+
+//#define DEF_PERF_APPLY
+#define DEBUG_BUILD_BVH
+
 
 	zCCamera*& pCamera = *(zCCamera**)0x008D7F94;
 
@@ -133,6 +140,7 @@ namespace GOTHIC_ENGINE {
 	int textLevelCurrent = 0;
 	int globalStackDepth = 0;
 	float sizeUnloatDestr = 0.0f;
+	bool showModel = false;
 
 	std::map<std::string, PerfStruct> perfArray;
 
@@ -216,7 +224,7 @@ namespace GOTHIC_ENGINE {
 		}
 		cmd << WARNING_COLOR << "================= TIMERS PERF INFO =================================================" << NORMAL_COLOR << endl;
 
-		cmd << "GlobalStackMaxSize: " << globalStackDepth << endl;
+		//cmd << "GlobalStackMaxSize: " << globalStackDepth << endl;
 
 		std::vector<std::reference_wrapper<std::pair<const std::string, PerfStruct>>> sortedEntries;
 		for (auto& pair : perfArray) {
@@ -350,7 +358,7 @@ namespace GOTHIC_ENGINE {
 		}
 	}
 
-//#define DEF_PERF_APPLY
+
 
 #ifdef DEF_PERF_APPLY
 #define RX_Perf_Start(name, type) RX_Perf_Start_Inner(name, type);
@@ -382,5 +390,33 @@ namespace GOTHIC_ENGINE {
 			value = bl;
 		else if (value > bh)
 			value = bh;
+	}
+
+
+	static int countPrintDebug = 0;
+	static zCView* testView = NULL;
+
+
+	void ClearPrintDebug() {
+		countPrintDebug = 0;
+
+		static int init = 0;
+
+		if (!init) {
+			init = true;
+			testView = new zCView(0, 0, SCREEN_MAX, SCREEN_MAX);
+			screen->InsertItem(testView);
+		}
+
+		if (testView) {
+			testView->SetFontColor(zCOLOR(0, 255, 0));
+			testView->ClrPrintwin();
+		}
+
+	}
+
+	void PrintDebug(zSTRING str) {
+
+		testView->Print(F(3), F(14) + F(3) * countPrintDebug++, str);
 	}
 }
