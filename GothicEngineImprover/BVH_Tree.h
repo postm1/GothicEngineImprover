@@ -31,7 +31,7 @@ namespace GOTHIC_ENGINE {
 		std::vector<zTBBox3D> bboxTrias;
 		int nodesCount = 0;
 
-		void SplitByBestAxis(BVHNode* node, std::vector<int>& triIndices, std::vector<int>& left, std::vector<int>& right);
+		void SplitByBestAxis(BVHNode* node, std::vector<int>& triIndices, std::vector<int>& left, std::vector<int>& right, bool isDebug);
 		void AddAllTriangles(BVHNode* node, std::vector<int>& input, bool isDebug);
 
 

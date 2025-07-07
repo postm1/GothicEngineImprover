@@ -14,8 +14,11 @@ namespace GOTHIC_ENGINE {
   
   void Game_Init() {
 
+#if defined(DEBUG_BUILD_BVH)
       flagsTraceHistory.reserve(1000);
       debug.Init();
+#endif
+
   }
 
   void Game_Exit() {
@@ -37,9 +40,9 @@ namespace GOTHIC_ENGINE {
 
 #if defined(DEBUG_BUILD_BVH)
       Raycast_Loop();
+      ClearPrintDebug();
 #endif
 
-      ClearPrintDebug();
 
       //flagsTraceHistory.clear();
 
@@ -50,10 +53,10 @@ namespace GOTHIC_ENGINE {
   {
       if (OnLevelFullLoaded_Once) return;
 
-
+#if defined(DEBUG_BUILD_BVH)
       showModel = false;
-
       debug.CleanLines();
+#endif
 
       RayCastVob_OnLevelLoaded();
 
@@ -72,6 +75,14 @@ namespace GOTHIC_ENGINE {
 #if defined(DEBUG_BUILD_BVH)
       debug.Loop();
       PrintDebug("globalStackDepth: " + Z globalStackDepth);
+
+      auto& it = perfArray.find("zCProgMeshProto::TraceRay_Union");
+
+      const double time_ms = static_cast<double>(it->second.timeGlobal) / 1000000.0;
+
+      float middle = time_ms / (float)it->second.callsGlobal;
+
+      PrintDebug("TraceMiddleTime: " + zSTRING(middle, 20));
 
 #endif
   }

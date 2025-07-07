@@ -39,7 +39,7 @@ namespace GOTHIC_ENGINE {
 #define F(a) a * FACTOR			// 8
 
 
-//#define DEF_PERF_APPLY
+#define DEF_PERF_APPLY
 #define DEBUG_BUILD_BVH
 
 
@@ -65,6 +65,7 @@ namespace GOTHIC_ENGINE {
 		int id;
 		int levelText;
 		bool endCalled;
+		long long timeGlobal;
 
 		PerfStruct::PerfStruct()
 		{
@@ -73,6 +74,7 @@ namespace GOTHIC_ENGINE {
 			result = 0;
 			callsGlobal = 0;
 			callsPerFrame = 0;
+			timeGlobal = 0;
 			id = 0;
 			levelText = 0;
 			endCalled = false;
@@ -253,6 +255,8 @@ namespace GOTHIC_ENGINE {
 
 		cmd << endl;
 
+
+		/*
 		int stats[15] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 		cmd << "=== Trace count: " << flagsTraceHistory.size() << " ===" << endl;
@@ -299,6 +303,7 @@ namespace GOTHIC_ENGINE {
 		cmd << "zTRACERAY_POLY_NORMAL: " << stats[12] << endl;
 		cmd << "zTRACERAY_VOB_TEST_HELPER_VISUALS: " << stats[13] << endl;
 		cmd << "zTRACERAY_VOB_IGNORE_PROJECTILES: " << stats[14] << endl;
+		*/
 	}
 
 	void RX_Perf_Start_Inner(char* name, PerfType type = PERF_TYPE_PER_ONCE)
@@ -343,8 +348,11 @@ namespace GOTHIC_ENGINE {
 		// понижаем уровень вывода текста (смещение)
 		textLevelCurrent--;
 
+		
 
 		auto deltaTime = std::chrono::duration_cast<std::chrono::nanoseconds>(entry.end_time - entry.begin_time).count();
+
+		entry.timeGlobal += deltaTime;
 
 		if (entry.type == PERF_TYPE_PER_FRAME)
 		{

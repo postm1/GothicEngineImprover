@@ -11,7 +11,7 @@ namespace GOTHIC_ENGINE {
 		root = nullptr;
 	}
 
-	void BVH_Tree::SplitByBestAxis(BVHNode* node, std::vector<int>& triIndices, std::vector<int>& left, std::vector<int>& right)
+	void BVH_Tree::SplitByBestAxis(BVHNode* node, std::vector<int>& triIndices, std::vector<int>& left, std::vector<int>& right, bool isDebug)
 	{
 		int data[3][2] = { 0 };
 		zTBBox3D dataVolume[3][2];
@@ -84,7 +84,7 @@ namespace GOTHIC_ENGINE {
 		}
 
 		// Если разделение не удалось (все элементы в одной группе)
-		if (left.empty() || right.empty())
+		if ((left.empty() || right.empty()) && triIndices.size() >= 5)
 		{
 			left.clear();
 			right.clear();
@@ -99,7 +99,7 @@ namespace GOTHIC_ENGINE {
 			left.insert(left.end(), triIndices.begin(), triIndices.begin() + half);
 			right.insert(right.end(), triIndices.begin() + half, triIndices.end());
 
-			cmd << "SPLIT CENTER: " << triIndices.size() << " -> " << left.size() << " | " << right.size() << endl;
+			if (isDebug) cmd << "SPLIT CENTER: " << triIndices.size() << " -> " << left.size() << " | " << right.size() << endl;
 		}
 	}
 
@@ -135,13 +135,13 @@ namespace GOTHIC_ENGINE {
 			node->triIndices.assign(input.begin(), input.begin() + size);
 		}
 
-		if (node->triIndices.size() >= 50 && !showModel)
+		/*if (node->triIndices.size() >= 50 && !showModel)
 		{
 			showModel = true;
 
 			DrawObjectBVH(this, node, 1150*1000);
 			
-		}
+		}*/
 
 		bvhDebug.triasCheckerCount += size;
 	}
@@ -179,9 +179,9 @@ namespace GOTHIC_ENGINE {
 		leftIndices.reserve(triIndices.size() / 2);
 		rightIndices.reserve(triIndices.size() / 2);
 
-		SplitByBestAxis(node, triIndices, leftIndices, rightIndices);
+		SplitByBestAxis(node, triIndices, leftIndices, rightIndices, isDebug);
 
-		//if (isDebug) cmd << triIndices.size() << " -> " << leftIndices.size() << " | " << rightIndices.size() << endl;
+		if (isDebug) cmd << triIndices.size() << " -> " << leftIndices.size() << " | " << rightIndices.size() << endl;
 
 		if (triIndices.size() == rightIndices.size() || triIndices.size() == leftIndices.size())
 		{
@@ -294,11 +294,15 @@ namespace GOTHIC_ENGINE {
 		this->proto = proto;
 		this->subMesh = subMesh;
 
+		cmd << "\n========= BUILD: " << proto->GetVisualName() << endl;
 
 		bool isDebugBuild = false;
-		bool showBuildMessage = false;
+		bool showBuildMessage = true;
 
-		//RX_Begin(53);
+#if defined (DEBUG_BUILD_BVH)
+		RX_Begin(53);
+#endif // DEBUG
+
 
 		bvhDebug.triasCheckerCount = 0;
 
@@ -337,7 +341,9 @@ namespace GOTHIC_ENGINE {
 
 		ScaleBboxes(root);
 
-		//RX_End(53);
+#if defined (DEBUG_BUILD_BVH)
+		RX_End(53);
+#endif
 
 		bboxTrias.clear();
 		centersTrias.clear();
