@@ -83,14 +83,14 @@ namespace GOTHIC_ENGINE {
 			}
 		}
 
-		// Если разделение не удалось (все элементы в одной группе)
+		// If we can't split by middle of longest axis => another method
 		if ((left.empty() || right.empty()) && triIndices.size() >= 5)
 		{
 			left.clear();
 			right.clear();
 
 			
-			// Альтернативный метод: сортируем и делим пополам
+			// sort and split by halves
 			std::sort(triIndices.begin(), triIndices.end(), [&](int a, int b) {
 				return centersTrias[a].n[bestAxis] < centersTrias[b].n[bestAxis];
 				});
@@ -294,12 +294,16 @@ namespace GOTHIC_ENGINE {
 		this->proto = proto;
 		this->subMesh = subMesh;
 
-		cmd << "\n========= BUILD: " << proto->GetVisualName() << endl;
+		
 
 		bool isDebugBuild = false;
-		bool showBuildMessage = true;
+		bool showBuildMessage = false;
 
 #if defined (DEBUG_BUILD_BVH)
+
+		if (showBuildMessage) cmd << "\n========= BUILD: " << proto->GetVisualName() << endl;
+		
+
 		RX_Begin(53);
 #endif // DEBUG
 

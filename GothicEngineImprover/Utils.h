@@ -39,8 +39,8 @@ namespace GOTHIC_ENGINE {
 #define F(a) a * FACTOR			// 8
 
 
-#define DEF_PERF_APPLY
-#define DEBUG_BUILD_BVH
+//#define DEF_PERF_APPLY
+//#define DEBUG_BUILD_BVH
 
 
 	zCCamera*& pCamera = *(zCCamera**)0x008D7F94;
