@@ -3,5 +3,8 @@
 // File: "Headers.h"
 
 namespace GOTHIC_ENGINE {
+
   // Add your code here . . .
+
+	AB_Debug debug;
 }

@@ -4,6 +4,7 @@
 // Automatically generated block
 #pragma region Includes
 #include "Utils.h"
+#include "AB_Debug.h"
 #include "BVH_Tree.h"
 #include "SubmeshStructure.h"
 #include "Plugin.h"

@@ -217,6 +217,9 @@
     <Filter Include="Plugin\Workspace\Plugin\Raycast_Optimize">
       <UniqueIdentifier>{36a0c19e-5b30-4f9a-aa6d-119ae5cee342}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Plugin\Workspace\Plugin\Debug">
+      <UniqueIdentifier>{2d2d799f-70b3-4e4a-908f-53e5b112d188}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Interface.cpp">
@@ -2801,6 +2804,12 @@
     </ClInclude>
     <ClInclude Include="zCSubMeshStruct.cpp">
       <Filter>Plugin\Workspace\Plugin\Raycast_Optimize</Filter>
+    </ClInclude>
+    <ClInclude Include="AB_Debug.h">
+      <Filter>Plugin\Workspace\Plugin\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="AB_Debug.cpp">
+      <Filter>Plugin\Workspace\Plugin\Debug</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

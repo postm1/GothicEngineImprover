@@ -118,6 +118,8 @@ namespace GOTHIC_ENGINE {
 		bvhDebug.triasCheckerCount += size;
 	}
 
+	bool showModel = false;
+
 	BVHNode* BVH_Tree::BuildNode(BVHNode* parent, std::vector<int>& triIndices, int depth, bool isDebug)
 	{
 		if (triIndices.size() == 0)
@@ -155,6 +157,13 @@ namespace GOTHIC_ENGINE {
 
 		if (triIndices.size() == rightIndices.size())
 		{
+
+			if (triIndices.size() >= 10)
+			{
+				cmd << "StopSplit Right: " << triIndices.size() << endl;
+				showModel = true;
+			}
+			
 			AddAllTriangles(node, triIndices, isDebug);
 
 			return node;
@@ -162,6 +171,13 @@ namespace GOTHIC_ENGINE {
 
 		if (triIndices.size() == leftIndices.size())
 		{
+			if (triIndices.size() >= 10)
+			{
+				cmd << "StopSplit Left: " << triIndices.size() << endl;
+				showModel = true;
+			}
+			
+			
 			AddAllTriangles(node, triIndices, isDebug);
 
 			return node;

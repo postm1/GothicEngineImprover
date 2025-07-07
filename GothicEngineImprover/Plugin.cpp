@@ -7,6 +7,7 @@ namespace GOTHIC_ENGINE {
   // TO DO
   // Your code ...
 
+    
 
   void Game_Entry() {
   }
@@ -14,6 +15,7 @@ namespace GOTHIC_ENGINE {
   void Game_Init() {
 
       flagsTraceHistory.reserve(1000);
+      debug.Init();
   }
 
   void Game_Exit() {
@@ -32,7 +34,7 @@ namespace GOTHIC_ENGINE {
 #if defined(DEF_PERF_APPLY) || defined(DEF_PERF_UPDATE)
       RX_Perf_UpdateFrame();
 #endif
-      //Raycast_Loop();
+      Raycast_Loop();
 
       //flagsTraceHistory.clear();
   }
@@ -53,6 +55,7 @@ namespace GOTHIC_ENGINE {
       
       OnLevelFullLoaded();
       
+      debug.Loop();
   }
 
   void Game_PostLoop() {

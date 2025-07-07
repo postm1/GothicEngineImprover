@@ -873,6 +873,14 @@ $(ALLUSERSPROFILE)\Union\SDK\Union\v1.0m\Build\incver.exe $(ProjectDir)</Command
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.cpp" />
+    <ClInclude Include="AB_Debug.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="AB_Debug.cpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="BVH_Build.cpp">
       <SubType>
       </SubType>

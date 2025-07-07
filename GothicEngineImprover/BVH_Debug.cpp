@@ -200,6 +200,21 @@ namespace GOTHIC_ENGINE {
 			zinput->ClearKeyBuffer();
 		}
 
+
+		if (zinput->KeyPressed(KEY_F4))
+		{
+			freezeDebug = !freezeDebug;
+
+			if (!freezeDebug)
+			{
+				debug.CleanLines();
+			}
+
+			printWinC("freezeDebug: " + Z freezeDebug);
+
+			zinput->ClearKeyBuffer();
+		}
+
 		return;
 
 		/*auto wld = ogame->GetWorld();

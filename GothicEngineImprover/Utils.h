@@ -30,7 +30,13 @@ namespace GOTHIC_ENGINE {
 #define ToStr (zSTRING)
 #define printWin(a) { if (ogame && ogame->game_text) {ogame->game_text->Printwin(ToStr a); }};
 #define printWinC(a) { if (ogame && ogame->game_text) {ogame->game_text->Printwin(ToStr a); cmd << a << endl; }};
+#define SCREEN_MAX 8192
+#define M_PI            3.14159265358979323846
+#define Alg_Deg2Rad(rad) (zREAL(zREAL(rad)*zREAL(M_PI)/zREAL(180.0f)))
+#define ToRadians(f) ((f) * M_PI / 180.0)
+#define ToDegrees(f) ((f) * 180.0 / M_PI)
 
+	zCCamera*& pCamera = *(zCCamera**)0x008D7F94;
 
 	enum PerfType
 	{
@@ -354,4 +360,27 @@ namespace GOTHIC_ENGINE {
 #define RX_Perf_End(name)            /* nothing */
 #endif
 
+
+
+	zCView* standardView() {
+		zCView* pView = new zCView(0, 0, SCREEN_MAX, SCREEN_MAX);
+		pView->SetFont("FONT_OLD_10_WHITE.TGA");
+		pView->SetFontColor(zCOLOR(255, 255, 255, 255));
+		return pView;
+	}
+
+	inline void zClamp(int& value, int bl, int bh) {
+		if (value < bl)
+			value = bl;
+		else if (value > bh)
+			value = bh;
+	}
+
+	// Поместить вещественное value в заданные границы сверху и снизу
+	inline void zClamp(float& value, float bl, float bh) {
+		if (value < bl)
+			value = bl;
+		else if (value > bh)
+			value = bh;
+	}
 }
