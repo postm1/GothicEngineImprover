@@ -40,7 +40,7 @@ namespace GOTHIC_ENGINE {
 
 
 //#define DEF_PERF_APPLY
-#define DEBUG_BUILD_BVH
+//#define DEBUG_BUILD_BVH
 
 
 	zCCamera*& pCamera = *(zCCamera**)0x008D7F94;

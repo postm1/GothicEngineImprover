@@ -309,7 +309,7 @@ namespace GOTHIC_ENGINE {
 
 		if (pFoundDebugTree)
 		{
-			DrawObjectBVH(pFoundDebugTree, pFoundDebugTree->root, 10);
+			DrawObjectBVH(pFoundDebugTree, NULL, 10);
 			DrawBVH_Tree(pFoundDebugTree->root, maxLevel, 0);
 		}
 
