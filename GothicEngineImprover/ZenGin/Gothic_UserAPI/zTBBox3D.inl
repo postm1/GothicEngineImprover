@@ -87,3 +87,18 @@ void zTBBox3D::MergeBox(const zTBBox3D& box) {
         }
     }
 }
+
+float Area() const {
+    // Проверка на вырожденный случай (например, нулевой объём)
+    if (mins[0] == maxs[0] || mins[1] == maxs[1] || mins[2] == maxs[2]) {
+        return 0.0f;
+    }
+
+    // Вычисляем длины рёбер по осям X, Y, Z
+    float dx = maxs[0] - mins[0]; // Длина по X
+    float dy = maxs[1] - mins[1]; // Длина по Y
+    float dz = maxs[2] - mins[2]; // Длина по Z
+
+    // Площадь поверхности AABB = 2*(dx*dy + dy*dz + dz*dx)
+    return 2.0f * (dx * dy + dy * dz + dz * dx);
+}

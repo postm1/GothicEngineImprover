@@ -41,12 +41,9 @@ namespace GOTHIC_ENGINE {
 #if defined(DEBUG_BUILD_BVH)
       Raycast_Loop();
       ClearPrintDebug();
+      flagsTraceHistory.clear();
 #endif
 
-
-      //flagsTraceHistory.clear();
-
-     
   }
 
   void OnLevelFullLoaded()

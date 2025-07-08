@@ -33,7 +33,7 @@ namespace GOTHIC_ENGINE {
 
 		void SplitByBestAxis(BVHNode* node, std::vector<int>& triIndices, std::vector<int>& left, std::vector<int>& right, bool isDebug);
 		void AddAllTriangles(BVHNode* node, std::vector<int>& input, bool isDebug);
-
+		void SplitByBinnedSAH(BVHNode* node, std::vector<int>& triIndices, std::vector<int>& left, std::vector<int>& right, bool isDebug);
 
 		zTBBox3D CalculateBBox(const std::vector<int>& indices);
 		zVEC3 GetTriangleCenter(int triIdx);

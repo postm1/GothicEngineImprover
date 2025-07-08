@@ -48,7 +48,7 @@ namespace GOTHIC_ENGINE {
 			for (int triIdx : node->triIndices)
 			{
 #if defined(DEBUG_BUILD_BVH)
-				//raycastReport.TrisTreeCheckCounter++;
+				raycastReport.TrisTreeCheckCounter++;
 #endif
 
 
@@ -245,9 +245,12 @@ namespace GOTHIC_ENGINE {
 					it = pTraceMap.find(subMesh);
 
 					RX_End(55);
+
+					cmd << "NewObject: " << pTraceMap.size() << " Time: " << RX_PerfString(55) << endl;
+
 					visualLoadBVHTimeThisFrame += perf[55];
 
-					//cmd << "NewObject: " << pTraceMap.size() << endl;
+					
 				}
 				else
 				{

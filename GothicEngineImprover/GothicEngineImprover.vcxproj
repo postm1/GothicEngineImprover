@@ -885,6 +885,10 @@ $(ALLUSERSPROFILE)\Union\SDK\Union\v1.0m\Build\incver.exe $(ProjectDir)</Command
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="BVH_Build_Utils.cpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="BVH_Debug.cpp">
       <SubType>
       </SubType>

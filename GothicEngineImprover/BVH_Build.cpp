@@ -4,13 +4,6 @@
 namespace GOTHIC_ENGINE {
 	// Add your code here . . .
 
-	BVH_Tree::BVH_Tree()
-	{
-		subMesh = nullptr;
-		proto = nullptr;
-		root = nullptr;
-	}
-
 	void BVH_Tree::SplitByBestAxis(BVHNode* node, std::vector<int>& triIndices, std::vector<int>& left, std::vector<int>& right, bool isDebug)
 	{
 		int data[3][2] = { 0 };
@@ -103,6 +96,107 @@ namespace GOTHIC_ENGINE {
 		}
 	}
 
+	void BVH_Tree::SplitByBinnedSAH(BVHNode* node, std::vector<int>& triIndices, std::vector<int>& left, std::vector<int>& right, bool isDebug)
+	{
+		int BINS = (triIndices.size() < 100) ? 6 : 12; // Пример настройки
+
+		float bestCost = FLT_MAX;
+		int bestAxis = -1;
+		int bestSplitBin = -1;
+
+		// Перебираем все оси (X, Y, Z)
+		for (int axis = 0; axis < 3; axis++)
+		{
+			// Находим min/max центров вдоль оси
+			float minVal = FLT_MAX, maxVal = -FLT_MAX;
+			for (int idx : triIndices)
+			{
+				float val = centersTrias[idx].n[axis];
+				minVal = min(minVal, val);
+				maxVal = max(maxVal, val);
+			}
+
+			// Если все треугольники на одной позиции — пропускаем ось
+			if (minVal == maxVal) continue;
+
+			// Инициализируем корзины
+			struct Bin { zTBBox3D bbox; int count = 0; };
+			std::vector<Bin> bins(BINS);
+
+			// Заполняем корзины
+			float scale = BINS / (maxVal - minVal);
+			for (int idx : triIndices)
+			{
+				float val = centersTrias[idx].n[axis];
+				int binIdx = min(BINS - 1, (int)((val - minVal) * scale));
+				bins[binIdx].bbox.MergeBox(bboxTrias[idx]);
+				bins[binIdx].count++;
+			}
+
+			// Перебираем все возможные разбиения между корзинами
+			for (int split = 1; split < BINS; split++)
+			{
+				// Вычисляем AABB и количество слева от split
+				zTBBox3D leftBox;
+				int leftCount = 0;
+				for (int i = 0; i < split; i++)
+				{
+					leftBox.MergeBox(bins[i].bbox);
+					leftCount += bins[i].count;
+				}
+
+				// Вычисляем AABB и количество справа от split
+				zTBBox3D rightBox;
+				int rightCount = 0;
+				for (int i = split; i < BINS; i++)
+				{
+					rightBox.MergeBox(bins[i].bbox);
+					rightCount += bins[i].count;
+				}
+
+				// Считаем стоимость SAH
+				float cost = 0.3f + (leftBox.Area() * leftCount + rightBox.Area() * rightCount) / node->bbox.Area();
+
+				// Если нашли лучшее разбиение — запоминаем
+				if (cost < bestCost)
+				{
+					bestCost = cost;
+					bestAxis = axis;
+					bestSplitBin = split;
+				}
+			}
+		}
+
+		// Если не нашли разбиения — делим пополам
+		if (bestAxis == -1)
+		{
+			//cmd << "Can't find -> Split by Best axis" << endl;
+			SplitByBestAxis(node, triIndices, left, right, isDebug);
+			return;
+		}
+
+		// Разделяем треугольники по лучшему разбиению
+		float minVal = FLT_MAX, maxVal = -FLT_MAX;
+		for (int idx : triIndices)
+		{
+			float val = centersTrias[idx].n[bestAxis];
+			minVal = min(minVal, val);
+			maxVal = max(maxVal, val);
+		}
+		float splitPos = minVal + (maxVal - minVal) * (bestSplitBin / float(BINS));
+
+
+		//cmd << "SAH split by axis: " << bestAxis << endl;
+
+		for (int idx : triIndices)
+		{
+			if (centersTrias[idx].n[bestAxis] < splitPos)
+				left.push_back(idx);
+			else
+				right.push_back(idx);
+		}
+	}
+
 	
 
 	void BVH_Tree::AddAllTriangles(BVHNode* node, std::vector<int>& input, bool isDebug)
@@ -171,9 +265,18 @@ namespace GOTHIC_ENGINE {
 		leftIndices.reserve(triIndices.size() / 2);
 		rightIndices.reserve(triIndices.size() / 2);
 
-		SplitByBestAxis(node, triIndices, leftIndices, rightIndices, isDebug);
+		// если уже загрузились, строим дерево быстрым способом, иначе будут подфризы	
+		if (OnLevelFullLoaded_Once)
+		{
+			SplitByBestAxis(node, triIndices, leftIndices, rightIndices, isDebug);
+		}
+		else
+		{
+			SplitByBinnedSAH(node, triIndices, leftIndices, rightIndices, isDebug);
+		}
+		
 
-		if (isDebug) cmd << triIndices.size() << " -> " << leftIndices.size() << " | " << rightIndices.size() << endl;
+		//if (isDebug) cmd << triIndices.size() << " -> " << leftIndices.size() << " | " << rightIndices.size() << endl;
 
 		if (triIndices.size() == rightIndices.size() || triIndices.size() == leftIndices.size())
 		{
@@ -187,100 +290,7 @@ namespace GOTHIC_ENGINE {
 		return node;
 	}
 
-	void BVH_Tree::DestroyTree(BVHNode*& root)
-	{
-		if (!root) return;
-
-		std::stack<BVHNode*> nodes;
-
-		nodes.push(root);
-		root = nullptr;
-
-		while (!nodes.empty())
-		{
-			BVHNode* node = nodes.top();
-			nodes.pop();
-
-			node->parent = NULL;
-
-			// Добавляем детей в стек
-			if (node->left) nodes.push(node->left);
-			if (node->right) nodes.push(node->right);
-
-			delete node;
-		}
-	}
-
-	zTBBox3D BVH_Tree::CalculateBBox(const std::vector<int>& indices)
-	{
-		zTBBox3D bbox;
-
-		bbox.Init();
-
-		// Для каждого индекса из списка
-		for (size_t i = 0; i < indices.size(); i++)
-		{
-			int triIdx = indices[i];
-			// Получаем треугольник по индексу
-			const auto& tri = subMesh->triList[triIdx];
-
-			// Добавляем все 3 вершины треугольника в bounding box
-			bbox.AddPoint(proto->posList[subMesh->wedgeList[tri.wedge[0]].position]);
-			bbox.AddPoint(proto->posList[subMesh->wedgeList[tri.wedge[1]].position]);
-			bbox.AddPoint(proto->posList[subMesh->wedgeList[tri.wedge[2]].position]);
-		}
-		return bbox;
-	}
-
-	zVEC3 BVH_Tree::GetTriangleCenter(int triIdx)
-	{
-		const auto& tri = subMesh->triList[triIdx];
-		zVEC3 center;
-		center += proto->posList[subMesh->wedgeList[tri.wedge[0]].position];
-		center += proto->posList[subMesh->wedgeList[tri.wedge[1]].position];
-		center += proto->posList[subMesh->wedgeList[tri.wedge[2]].position];
-		return center / 3.0f;
-	}
-
-	zTBBox3D BVH_Tree::GetTriangleBbox(int triIdx)
-	{
-		const auto& tri = subMesh->triList[triIdx];
-
-		// Инициализация bounding box с первой вершины треугольника
-		zTBBox3D triangleBbox;
-
-		triangleBbox.Init();
-
-		const auto& vertex0 = proto->posList[subMesh->wedgeList[tri.wedge[0]].position];
-		triangleBbox.AddPoint(vertex0);
-
-		// Добавляем оставшиеся вершины треугольника
-		const auto& vertex1 = proto->posList[subMesh->wedgeList[tri.wedge[1]].position];
-		triangleBbox.AddPoint(vertex1);
-
-		const auto& vertex2 = proto->posList[subMesh->wedgeList[tri.wedge[2]].position];
-		triangleBbox.AddPoint(vertex2);
-
-		return triangleBbox;
-	}
-
-	void BVH_Tree::ScaleBboxes(BVHNode* node)
-	{
-		if (node)
-		{
-			node->bbox.Scale(1.01f);
-
-			if (node->left)
-			{
-				ScaleBboxes(node->left);
-			}
-
-			if (node->right)
-			{
-				ScaleBboxes(node->right);
-			}
-		}
-	}
+	
 	void BVH_Tree::Build(zCProgMeshProto* proto, zCProgMeshProto::zCSubMesh* subMesh)
 	{
 		this->proto = proto;
@@ -379,17 +389,5 @@ namespace GOTHIC_ENGINE {
 
 	}
 
-	int BVH_Tree::CheckAllIndices(const std::vector<int>& triIndices)
-	{
-		int badCount = 0;
-
-		for (int i : triIndices)
-		{
-			if (bvhDebug.indexDebugCheck.find(i) == bvhDebug.indexDebugCheck.end())
-			{
-				badCount++;
-			}
-		}
-		return badCount;
-	}
+	
 }
