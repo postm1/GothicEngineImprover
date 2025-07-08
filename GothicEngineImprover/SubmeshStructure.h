@@ -80,7 +80,7 @@ namespace GOTHIC_ENGINE {
 
 	static bool isOldMethod = false;
 	static bool freezeDebug = false;
-	int maxLevel = 1;
+	int maxLevel = 0;
 
 	zSTRING nodeWayGlobal;
 	BVHNode* nodeFoundGlobal = NULL;

@@ -180,7 +180,7 @@ namespace GOTHIC_ENGINE {
 
 	void DrawObjectBVH(BVH_Tree* tree, BVHNode* node, int time)
 	{
-		if (!tree || !node) return;
+		if (!tree) return;
 
 		zCProgMeshProto* proto = tree->proto;
 
@@ -196,7 +196,9 @@ namespace GOTHIC_ENGINE {
 			for (int i = 0; i < it->triList.GetNum(); i++)
 			{
 
-				bool contains = (std::find(node->triIndices.begin(), node->triIndices.end(), i) != node->triIndices.end());
+				bool contains = false;
+				
+				if (node) contains = (std::find(node->triIndices.begin(), node->triIndices.end(), i) != node->triIndices.end());
 
 				zCOLOR col = GFX_WHITE;
 
@@ -217,6 +219,31 @@ namespace GOTHIC_ENGINE {
 		}
 		
 	}
+
+	void DrawBVH_Tree(BVHNode* node, int targetLevel, int currentLevel)
+	{
+		if (!node) return;
+
+		// Если текущий уровень - целевой, рисуем BBox этого узла
+		if (currentLevel == targetLevel) {
+			node->bbox.Draw(GFX_RED);  // Рисуем текущий узел
+
+			// Для отладки: можно добавить вывод информации
+			// cmd << "Level " << currentLevel << " node: " << node->bbox << endl;
+			return;
+		}
+
+		// Рекурсивно обходим детей, если не достигли целевого уровня
+		if (node->left) {
+			DrawBVH_Tree(node->left, targetLevel, currentLevel + 1);
+		}
+
+		if (node->right) {
+			DrawBVH_Tree(node->right, targetLevel, currentLevel + 1);
+		}
+	}
+
+	BVH_Tree* pFoundDebugTree = NULL;
 
 	void Raycast_Loop()
 	{
@@ -240,6 +267,50 @@ namespace GOTHIC_ENGINE {
 			zinput->ClearKeyBuffer();
 		}
 
+		if (!freezeDebug)
+		{
+			auto start = player->GetPositionWorld();
+			auto dir = player->GetAtVectorWorld();
+			
+			bool traceTry = ogame->GetWorld()->TraceRayNearestHit(start, dir * 2000, (zCVob*)NULL, zTRACERAY_VOB_IGNORE_CHARACTER | zTRACERAY_VOB_IGNORE_NO_CD_DYN | zTRACERAY_STAT_POLY);
+
+			if (traceTry)
+			{
+				auto& report = ogame->GetWorld()->traceRayReport;
+
+				if (report.foundVob)
+				{
+					if (auto pVisual = report.foundVob->GetVisual())
+					{
+						if (auto pProto = pVisual->CastTo<zCProgMeshProto>())
+						{
+							for (int s = 0; s < pProto->numSubMeshes; s++)
+							{
+								zCProgMeshProto::zCSubMesh* subMesh = &(pProto->subMeshList[s]);
+
+								if (subMesh && subMesh->triList.GetNum() >= 0)
+								{
+									auto& it = pTraceMap.find(subMesh);
+
+									if (it != pTraceMap.end())
+									{
+										pFoundDebugTree = it->second.bvhTree;
+									}
+								}
+							}
+						}
+					}
+					
+				}
+			}
+			
+		}
+
+		if (pFoundDebugTree)
+		{
+			DrawObjectBVH(pFoundDebugTree, pFoundDebugTree->root, 5);
+			DrawBVH_Tree(pFoundDebugTree->root, maxLevel, 0);
+		}
 
 		if (zinput->KeyPressed(KEY_F4))
 		{
@@ -255,6 +326,25 @@ namespace GOTHIC_ENGINE {
 			zinput->ClearKeyBuffer();
 		}
 
+
+		if (zinput->KeyPressed(KEY_F1))
+		{
+			maxLevel -= 1;
+			zClamp(maxLevel, 0, 100);
+			zinput->ClearKeyBuffer();
+			printWinC("maxLevel: " + Z maxLevel);
+			//zrenderer->SetPolyDrawMode(zRND_DRAW_MATERIAL_WIRE);
+		}
+
+		if (zinput->KeyPressed(KEY_F2))
+		{
+			maxLevel += 1;
+			zClamp(maxLevel, 0, 100);
+			zinput->ClearKeyBuffer();
+			printWinC("maxLevel: " + Z maxLevel);
+			//zrenderer->SetPolyDrawMode(zRND_DRAW_MATERIAL_WIRE);
+		}
+
 		return;
 
 		/*auto wld = ogame->GetWorld();
@@ -265,40 +355,8 @@ namespace GOTHIC_ENGINE {
 		ignore.Insert(player);*/
 
 		/*
-		if (KeyClick(KEY_F1))
-		{
-			maxLevel -= 1;
-			zClamp(maxLevel, 0, 100);
-			CLR_KEY(KEY_F1);
-			printWinC("maxLevel: " + Z maxLevel);
-			//zrenderer->SetPolyDrawMode(zRND_DRAW_MATERIAL_WIRE);
-		}
-
-		if (KeyClick(KEY_F2))
-		{
-			maxLevel += 1;
-			zClamp(maxLevel, 0, 100);
-			CLR_KEY(KEY_F2);
-			printWinC("maxLevel: " + Z maxLevel);
-			//zrenderer->SetPolyDrawMode(zRND_DRAW_MATERIAL_WIRE);
-		}
+		
 		*/
-
-	
-
-		/*if (KeyClick(KEY_F4))
-		{
-			freezeDebug = !freezeDebug;
-
-			if (!freezeDebug)
-			{
-				debug.CleanLines();
-			}
-
-			printWinC("freezeDebug: " + Z freezeDebug);
-
-			CLR_KEY(KEY_F4);
-		}*/
 		
 	}
 }
