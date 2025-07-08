@@ -246,7 +246,7 @@ namespace GOTHIC_ENGINE {
 
 					RX_End(55);
 
-					cmd << "NewObject: " << pTraceMap.size() << " Time: " << RX_PerfString(55) << endl;
+					//cmd << "NewObject: " << pTraceMap.size() << " Time: " << RX_PerfString(55) << endl;
 
 					visualLoadBVHTimeThisFrame += perf[55];
 
