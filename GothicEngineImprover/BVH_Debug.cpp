@@ -220,27 +220,28 @@ namespace GOTHIC_ENGINE {
 		
 	}
 
-	void DrawBVH_Tree(BVHNode* node, int targetLevel, int currentLevel)
-	{
-		if (!node) return;
+	void DrawBVH_Tree(BVHNode* node, int targetLevel, int currentLevel,
+		zCOLOR leftColor = GFX_RED, zCOLOR rightColor = GFX_BLUE) {
 
-		// Если текущий уровень - целевой, рисуем BBox этого узла
+		if (!node || currentLevel > targetLevel)
+			return;
+
+		// Если достигли нужного уровня
 		if (currentLevel == targetLevel) {
-			node->bbox.Draw(GFX_RED);  // Рисуем текущий узел
+			// Определяем цвет: левый (красный) или правый (синий)
+			zCOLOR color = GFX_WHITE; // Корень (если targetLevel=0)
 
-			// Для отладки: можно добавить вывод информации
-			// cmd << "Level " << currentLevel << " node: " << node->bbox << endl;
+			if (node->parent) {
+				color = (node == node->parent->left) ? GFX_RED : GFX_BLUE;
+			}
+
+			node->bbox.Draw(color);
 			return;
 		}
 
-		// Рекурсивно обходим детей, если не достигли целевого уровня
-		if (node->left) {
-			DrawBVH_Tree(node->left, targetLevel, currentLevel + 1);
-		}
-
-		if (node->right) {
-			DrawBVH_Tree(node->right, targetLevel, currentLevel + 1);
-		}
+		// Рекурсивный обход без лишней отрисовки
+		DrawBVH_Tree(node->left, targetLevel, currentLevel + 1);
+		DrawBVH_Tree(node->right, targetLevel, currentLevel + 1);
 	}
 
 	BVH_Tree* pFoundDebugTree = NULL;
@@ -308,7 +309,7 @@ namespace GOTHIC_ENGINE {
 
 		if (pFoundDebugTree)
 		{
-			DrawObjectBVH(pFoundDebugTree, pFoundDebugTree->root, 5);
+			DrawObjectBVH(pFoundDebugTree, pFoundDebugTree->root, 10);
 			DrawBVH_Tree(pFoundDebugTree->root, maxLevel, 0);
 		}
 

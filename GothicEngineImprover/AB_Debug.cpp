@@ -102,6 +102,15 @@ namespace GOTHIC_ENGINE {
 				}
 			}
 		}
+
+		for (int i = this->pListPoints.GetNumInList() - 1; i >= 0; i--) {
+	
+			if (this->pListPoints.GetSafe(i)->time <= 0)
+			{
+				delete this->pListPoints.GetSafe(i);
+				this->pListPoints.RemoveOrderIndex(i);
+			}
+		}
 	}
 
 	//
