@@ -1,4 +1,4 @@
-// Supported with union (c) 2020 Union team
+п»ї// Supported with union (c) 2020 Union team
 // Union HEADER file
 
 
@@ -48,9 +48,9 @@ namespace GOTHIC_ENGINE {
 
 	enum PerfType
 	{
-		PERF_TYPE_PER_ONCE = 0, // прямой единичный замер участка кода
+		PERF_TYPE_PER_ONCE = 0, // РїСЂСЏРјРѕР№ РµРґРёРЅРёС‡РЅС‹Р№ Р·Р°РјРµСЂ СѓС‡Р°СЃС‚РєР° РєРѕРґР°
 		PERF_TYPE_PER_SEC,
-		PERF_TYPE_PER_FRAME, //замер всех вызовов участка кода за 1 кадр (суммарный)
+		PERF_TYPE_PER_FRAME, //Р·Р°РјРµСЂ РІСЃРµС… РІС‹Р·РѕРІРѕРІ СѓС‡Р°СЃС‚РєР° РєРѕРґР° Р·Р° 1 РєР°РґСЂ (СЃСѓРјРјР°СЂРЅС‹Р№)
 	};
 
 	struct PerfStruct
@@ -148,16 +148,16 @@ namespace GOTHIC_ENGINE {
 
 	std::map<std::string, PerfStruct> perfArray;
 
-	// Получаем базовые цвета (можно вынести в параметры функции)
+	// РџРѕР»СѓС‡Р°РµРј Р±Р°Р·РѕРІС‹Рµ С†РІРµС‚Р° (РјРѕР¶РЅРѕ РІС‹РЅРµСЃС‚Рё РІ РїР°СЂР°РјРµС‚СЂС‹ С„СѓРЅРєС†РёРё)
 	static const Col16 NORMAL_COLOR(CMD_WHITE);
 	static const Col16 WARNING_COLOR(CMD_RED);
-	static const Col16 RESET_COLOR(CMD_WHITE); // Цвет сброса
-	static const Col16 GREEN_COLOR(CMD_GREEN); // Цвет сброса
+	static const Col16 RESET_COLOR(CMD_WHITE); // Р¦РІРµС‚ СЃР±СЂРѕСЃР°
+	static const Col16 GREEN_COLOR(CMD_GREEN); // Р¦РІРµС‚ СЃР±СЂРѕСЃР°
 
 	std::vector<int> flagsTraceHistory;
 
 
-	// выводим инфу в консоль
+	// РІС‹РІРѕРґРёРј РёРЅС„Сѓ РІ РєРѕРЅСЃРѕР»СЊ
 	void RX_Perf_Print(PerfStruct& entry, const std::string& name) {
 
 		if (!bShowPerfTimers)
@@ -165,12 +165,12 @@ namespace GOTHIC_ENGINE {
 			return;
 		}
 
-		// Форматируем основное время
+		// Р¤РѕСЂРјР°С‚РёСЂСѓРµРј РѕСЃРЅРѕРІРЅРѕРµ РІСЂРµРјСЏ
 		const double time_ms = static_cast<double>(entry.result) / 1000000.0;
 		std::ostringstream oss_time;
 		oss_time << std::fixed << std::setprecision(6) << time_ms;
 
-		// Форматируем среднее время
+		// Р¤РѕСЂРјР°С‚РёСЂСѓРµРј СЃСЂРµРґРЅРµРµ РІСЂРµРјСЏ
 		double avg = 0.0;
 		if (entry.callsPerFrame > 0) {
 			avg = (entry.result / static_cast<double>(entry.callsPerFrame)) / 1000000.0;
@@ -188,7 +188,7 @@ namespace GOTHIC_ENGINE {
 
 		cmd << tabs.c_str();
 
-		// Начинаем вывод
+		// РќР°С‡РёРЅР°РµРј РІС‹РІРѕРґ
 		cmd << NORMAL_COLOR
 			//<< "["<< entry.GetTypeString() << "] "
 			<< "["
@@ -199,7 +199,7 @@ namespace GOTHIC_ENGINE {
 			<< entry.callsPerFrame << "/"
 			<< entry.callsGlobal << ") | ";
 
-		// Выводим время с цветом в зависимости от значения
+		// Р’С‹РІРѕРґРёРј РІСЂРµРјСЏ СЃ С†РІРµС‚РѕРј РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ Р·РЅР°С‡РµРЅРёСЏ
 		if (time_ms >= 0.02) {
 			cmd << WARNING_COLOR << oss_time.str().c_str();
 		}
@@ -207,12 +207,12 @@ namespace GOTHIC_ENGINE {
 			cmd << NORMAL_COLOR << oss_time.str().c_str();
 		}
 
-		// Продолжаем вывод
+		// РџСЂРѕРґРѕР»Р¶Р°РµРј РІС‹РІРѕРґ
 		cmd << NORMAL_COLOR << " ms | AVG: ";
 
 		cmd << NORMAL_COLOR << oss_avg.str().c_str();
 
-		// Завершаем строку
+		// Р—Р°РІРµСЂС€Р°РµРј СЃС‚СЂРѕРєСѓ
 		cmd << NORMAL_COLOR << " ms";
 
 		//cmd << " | " << entry.levelText;
@@ -235,14 +235,14 @@ namespace GOTHIC_ENGINE {
 			sortedEntries.emplace_back(pair);
 		}
 
-		// 2. Сортируем
+		// 2. РЎРѕСЂС‚РёСЂСѓРµРј
 		std::sort(sortedEntries.begin(), sortedEntries.end(),
 			[](auto& a, auto& b) {
 				return a.get().second.id < b.get().second.id;
 			}
 		);
 
-		// 3. Выводим
+		// 3. Р’С‹РІРѕРґРёРј
 		for (auto& entry : sortedEntries) {
 			zSTRING s = entry.get().first.c_str();
 			RX_Perf_Print(entry.get().second, s.ToChar());
@@ -251,7 +251,7 @@ namespace GOTHIC_ENGINE {
 
 			if (!entry.get().second.endCalled)
 			{
-				Message::Box("End функции не существует: " + s);
+				Message::Box("End С„СѓРЅРєС†РёРё РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚: " + s);
 			}
 		}
 
@@ -346,8 +346,8 @@ namespace GOTHIC_ENGINE {
 		auto& entry = perfArray[name];
 
 		entry.end_time = timeNow;
-		entry.endCalled = true; // проверка чтобы End функция была, чтобы если что показать ошибку
-		// понижаем уровень вывода текста (смещение)
+		entry.endCalled = true; // РїСЂРѕРІРµСЂРєР° С‡С‚РѕР±С‹ End С„СѓРЅРєС†РёСЏ Р±С‹Р»Р°, С‡С‚РѕР±С‹ РµСЃР»Рё С‡С‚Рѕ РїРѕРєР°Р·Р°С‚СЊ РѕС€РёР±РєСѓ
+		// РїРѕРЅРёР¶Р°РµРј СѓСЂРѕРІРµРЅСЊ РІС‹РІРѕРґР° С‚РµРєСЃС‚Р° (СЃРјРµС‰РµРЅРёРµ)
 		textLevelCurrent--;
 
 		
@@ -394,7 +394,7 @@ namespace GOTHIC_ENGINE {
 			value = bh;
 	}
 
-	// Поместить вещественное value в заданные границы сверху и снизу
+	// РџРѕРјРµСЃС‚РёС‚СЊ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРµ value РІ Р·Р°РґР°РЅРЅС‹Рµ РіСЂР°РЅРёС†С‹ СЃРІРµСЂС…Сѓ Рё СЃРЅРёР·Сѓ
 	inline void zClamp(float& value, float bl, float bh) {
 		if (value < bl)
 			value = bl;
@@ -433,28 +433,82 @@ namespace GOTHIC_ENGINE {
 	/*
 	bool zTBBox3D::IsIntersectingAVX(const zTBBox3D& bbox3D) const
 	{
-		const __m256 this_min = _mm256_loadu_ps(&mins.n[VX]); // Загружаем minX,minY,minZ
-		const __m256 this_max = _mm256_loadu_ps(&maxs.n[VX]); // Загружаем maxX,maxY,maxZ
+		const __m256 this_min = _mm256_loadu_ps(&mins.n[VX]); // Р—Р°РіСЂСѓР¶Р°РµРј minX,minY,minZ
+		const __m256 this_max = _mm256_loadu_ps(&maxs.n[VX]); // Р—Р°РіСЂСѓР¶Р°РµРј maxX,maxY,maxZ
 
-		// Загружаем min/max второго бокса (невыровненная загрузка)
+		// Р—Р°РіСЂСѓР¶Р°РµРј min/max РІС‚РѕСЂРѕРіРѕ Р±РѕРєСЃР° (РЅРµРІС‹СЂРѕРІРЅРµРЅРЅР°СЏ Р·Р°РіСЂСѓР·РєР°)
 		const __m256 other_min = _mm256_loadu_ps(&bbox3D.mins.n[VX]);
 		const __m256 other_max = _mm256_loadu_ps(&bbox3D.maxs.n[VX]);
 
-		// Сравнение: other_max >= this_min (для всех осей)
+		// РЎСЂР°РІРЅРµРЅРёРµ: other_max >= this_min (РґР»СЏ РІСЃРµС… РѕСЃРµР№)
 		const __m256 cmp_ge_min = _mm256_cmp_ps(other_max, this_min, _CMP_GE_OQ);
 
-		// Сравнение: this_max >= other_min (для всех осей)
+		// РЎСЂР°РІРЅРµРЅРёРµ: this_max >= other_min (РґР»СЏ РІСЃРµС… РѕСЃРµР№)
 		const __m256 cmp_ge_max = _mm256_cmp_ps(this_max, other_min, _CMP_GE_OQ);
 
-		// Комбинируем результаты (логическое И)
+		// РљРѕРјР±РёРЅРёСЂСѓРµРј СЂРµР·СѓР»СЊС‚Р°С‚С‹ (Р»РѕРіРёС‡РµСЃРєРѕРµ Р)
 		const __m256 combined = _mm256_and_ps(cmp_ge_min, cmp_ge_max);
 
-		// Получаем битовую маску (первые 3 бита - X,Y,Z)
+		// РџРѕР»СѓС‡Р°РµРј Р±РёС‚РѕРІСѓСЋ РјР°СЃРєСѓ (РїРµСЂРІС‹Рµ 3 Р±РёС‚Р° - X,Y,Z)
 		const int mask = _mm256_movemask_ps(combined) & 0x07;
 
-		// Все три оси должны пересекаться
+		// Р’СЃРµ С‚СЂРё РѕСЃРё РґРѕР»Р¶РЅС‹ РїРµСЂРµСЃРµРєР°С‚СЊСЃСЏ
 		return (mask == 0x07);
 		
+	}
+	*/
+	/*
+	bool zTBBox3D::IsIntersectingRayAVX(const zVEC3& rayOrigin, const zVEC3& rayDirection, float& scaleMin, float& scaleMax) const
+	{
+		constexpr float  EPS = 1.0e-4f;
+		const  __m256 vEps = _mm256_set1_ps(EPS);
+		const  __m256 vNegInf = _mm256_set1_ps(-FLT_MAX);
+		const  __m256 vPosInf = _mm256_set1_ps(FLT_MAX);
+
+		const __m256 vMins = _mm256_setr_ps(mins[0], mins[1], mins[2], 0.f, 0.f, 0.f, 0.f, 0.f);
+		const __m256 vMaxs = _mm256_setr_ps(maxs[0], maxs[1], maxs[2], 0.f, 0.f, 0.f, 0.f, 0.f);
+		const __m256 vOrigin = _mm256_setr_ps(rayOrigin[0], rayOrigin[1], rayOrigin[2], 0.f, 0.f, 0.f, 0.f, 0.f);
+		const __m256 vDir = _mm256_setr_ps(rayDirection[0], rayDirection[1], rayDirection[2],
+			1.f, 1.f, 1.f, 1.f, 1.f);         // С„РёРєС‚РёРІРЅС‹Рµ 1вЂЇвЂ”вЂЇРґР»СЏ РЅР°РґС‘Р¶РЅРѕРіРѕ РґРµР»РµРЅРёСЏ
+
+
+		const __m256 vAbsDir = _mm256_andnot_ps(_mm256_set1_ps(-0.0f), vDir);  // fabs(dir)
+		const __m256 maskPar = _mm256_cmp_ps(vAbsDir, vEps, _CMP_LT_OQ);         // abs(dir) < EPS ?
+
+
+		const __m256 maskInside =
+			_mm256_and_ps(_mm256_cmp_ps(vOrigin, vMins, _CMP_GE_OQ),              // origin в‰Ґ mins
+				_mm256_cmp_ps(vOrigin, vMaxs, _CMP_LE_OQ));            // origin в‰¤ maxs
+
+		const __m256 maskParReject = _mm256_andnot_ps(maskInside, maskPar);        // parallel & outside
+		if (_mm256_movemask_ps(maskParReject) & 0x7)                             // РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ 3 Р»СЌР№РЅРѕРІ
+			return FALSE;
+
+
+		const __m256 vInvDir = _mm256_blendv_ps(_mm256_div_ps(_mm256_set1_ps(1.f), vDir),
+			_mm256_set1_ps(0.f), maskPar);   // 1/dir, Р° РґР»СЏ РїР°СЂР°Р»Р». =0
+
+		__m256 t0 = _mm256_mul_ps(_mm256_sub_ps(vMins, vOrigin), vInvDir);       // (mins - O) / dir
+		__m256 t1 = _mm256_mul_ps(_mm256_sub_ps(vMaxs, vOrigin), vInvDir);       // (maxs - O) / dir
+
+
+		const __m256 maskSwap = _mm256_cmp_ps(t1, t0, _CMP_LT_OQ);
+		const __m256 tt0 = _mm256_blendv_ps(t0, t1, maskSwap);
+		const __m256 tt1 = _mm256_blendv_ps(t1, t0, maskSwap);
+
+
+		const __m256 tMin = _mm256_blendv_ps(tt0, vNegInf, maskPar);
+		const __m256 tMax = _mm256_blendv_ps(tt1, vPosInf, maskPar);
+
+
+		alignas(32) float tmpMin[8], tmpMax[8];
+		_mm256_storeu_ps(tmpMin, tMin);
+		_mm256_storeu_ps(tmpMax, tMax);
+
+		scaleMin = max(tmpMin[0], max(tmpMin[1], tmpMin[2]));
+		scaleMax = min(tmpMax[0], min(tmpMax[1], tmpMax[2]));
+
+		return (scaleMin <= scaleMax);
 	}
 	*/
 }

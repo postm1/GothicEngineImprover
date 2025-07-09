@@ -104,3 +104,4 @@ float Area() const {
 }
 
 inline bool IsIntersectingAVX(const zTBBox3D& bbox3D) const;
+inline bool IsIntersectingRayAVX(const zVEC3& rayOrigin, const zVEC3& rayDirection, float& scaleMin, float& scaleMax) const;
