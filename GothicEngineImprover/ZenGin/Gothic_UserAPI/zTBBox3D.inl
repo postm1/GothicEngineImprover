@@ -102,3 +102,5 @@ float Area() const {
     // Площадь поверхности AABB = 2*(dx*dy + dy*dz + dz*dx)
     return 2.0f * (dx * dy + dy * dz + dz * dx);
 }
+
+inline bool IsIntersectingAVX(const zTBBox3D& bbox3D) const;

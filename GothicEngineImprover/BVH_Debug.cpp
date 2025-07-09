@@ -245,6 +245,17 @@ namespace GOTHIC_ENGINE {
 	}
 
 	BVH_Tree* pFoundDebugTree = NULL;
+	extern void FindIntersectingNodes(
+		BVHNode* root,
+		const zTBBox3D& queryBBox,
+		std::vector<BVHNode*>& result
+	);
+
+	extern void FindIntersectingNodesNew(
+		BVHNode* root,
+		const zTBBox3D& queryBBox,
+		std::vector<BVHNode*>& result
+	);
 
 	void Raycast_Loop()
 	{
@@ -346,6 +357,47 @@ namespace GOTHIC_ENGINE {
 			//zrenderer->SetPolyDrawMode(zRND_DRAW_MATERIAL_WIRE);
 		}
 
+
+		if (zinput->KeyPressed(KEY_F3) && pFoundDebugTree)
+		{
+			zinput->ClearKeyBuffer();
+			printWinC("SearchBox: " + pFoundDebugTree->proto->GetVisualName());
+
+			auto pos = player->GetPositionWorld() + zVEC3(0, 100, 0);
+			auto dir = player->GetAtVectorWorld() * 1000;
+
+			zTBBox3D bbox;
+			bbox.Init();
+
+			bbox.AddPoint(pos);
+			bbox.AddPoint(pos + dir);
+
+			std::vector<BVHNode*> found;
+
+			debug.AddLine(pos, pos + dir, GFX_RED, 15000);
+			debug.AddBbox(bbox, GFX_BLUE, 15000);
+
+			RX_Begin(5);
+			FindIntersectingNodes(pFoundDebugTree->root, bbox, found);
+			RX_End(5);
+
+			printWinC(RX_PerfString(5) + " " + Z(int)found.size());
+
+			found.clear();
+
+			RX_Begin(6);
+			FindIntersectingNodesNew(pFoundDebugTree->root, bbox, found);
+			RX_End(6);
+
+			
+			printWinC(RX_PerfString(6) + " " + Z (int)found.size());
+
+			//zrenderer->SetPolyDrawMode(zRND_DRAW_MATERIAL_WIRE);
+		}
+
+
+		
+		
 		return;
 
 		/*auto wld = ogame->GetWorld();

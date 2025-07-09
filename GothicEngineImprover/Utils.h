@@ -21,6 +21,7 @@
 #include <sstream>
 #include <numeric>
 #include <stack>
+//#include <immintrin.h>
 
 using namespace std;
 
@@ -428,4 +429,32 @@ namespace GOTHIC_ENGINE {
 
 		testView->Print(F(3), F(14) + F(3) * countPrintDebug++, str);
 	}
+
+	/*
+	bool zTBBox3D::IsIntersectingAVX(const zTBBox3D& bbox3D) const
+	{
+		const __m256 this_min = _mm256_loadu_ps(&mins.n[VX]); // Загружаем minX,minY,minZ
+		const __m256 this_max = _mm256_loadu_ps(&maxs.n[VX]); // Загружаем maxX,maxY,maxZ
+
+		// Загружаем min/max второго бокса (невыровненная загрузка)
+		const __m256 other_min = _mm256_loadu_ps(&bbox3D.mins.n[VX]);
+		const __m256 other_max = _mm256_loadu_ps(&bbox3D.maxs.n[VX]);
+
+		// Сравнение: other_max >= this_min (для всех осей)
+		const __m256 cmp_ge_min = _mm256_cmp_ps(other_max, this_min, _CMP_GE_OQ);
+
+		// Сравнение: this_max >= other_min (для всех осей)
+		const __m256 cmp_ge_max = _mm256_cmp_ps(this_max, other_min, _CMP_GE_OQ);
+
+		// Комбинируем результаты (логическое И)
+		const __m256 combined = _mm256_and_ps(cmp_ge_min, cmp_ge_max);
+
+		// Получаем битовую маску (первые 3 бита - X,Y,Z)
+		const int mask = _mm256_movemask_ps(combined) & 0x07;
+
+		// Все три оси должны пересекаться
+		return (mask == 0x07);
+		
+	}
+	*/
 }

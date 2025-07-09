@@ -104,6 +104,86 @@ namespace GOTHIC_ENGINE {
 
 	}
 
+	void FindIntersectingNodes(
+		BVHNode* root,
+		const zTBBox3D& queryBBox,
+		std::vector<BVHNode*>& result
+	) {
+		constexpr int MAX_STACK_SIZE = 64; // Глубина стека (хватит для деревьев глубиной до 2^64)
+		BVHNode* stack[MAX_STACK_SIZE];
+		int stackSize = 0;
+
+		result.reserve(100);
+
+		// Начинаем с корня
+		stack[stackSize++] = root;
+
+		while (stackSize > 0) {
+			// Извлекаем узел из стека
+			BVHNode* node = stack[--stackSize];
+
+			// Проверяем пересечение
+			if (!node->bbox.IsIntersecting(queryBBox)) {
+				continue;
+			}
+
+			// Добавляем узел в результат
+			result.push_back(node);
+
+			// Кладем детей в стек (сначала правый, потом левый)
+			if (node->right) {
+				stack[stackSize++] = node->right;
+			}
+			if (node->left) {
+				stack[stackSize++] = node->left;
+			}
+
+			// Защита от переполнения (теоретически невозможно для MAX_STACK_SIZE=64)
+			if (stackSize >= MAX_STACK_SIZE - 2) {
+				break;
+			}
+		}
+	}
+
+	void FindIntersectingNodesNew(
+		BVHNode* root,
+		const zTBBox3D& queryBBox,
+		std::vector<BVHNode*>& result
+	) {
+		constexpr int MAX_STACK_SIZE = 64; // Глубина стека (хватит для деревьев глубиной до 2^64)
+		BVHNode* stack[MAX_STACK_SIZE];
+		int stackSize = 0;
+
+		result.reserve(100);
+
+		// Начинаем с корня
+		stack[stackSize++] = root;
+
+		while (stackSize > 0) {
+			// Извлекаем узел из стека
+			BVHNode* node = stack[--stackSize];
+
+
+			//IsIntersectingAVX
+			// Проверяем пересечение
+			if (!node->bbox.IsIntersecting(queryBBox)) {
+				continue;
+			}
+
+			// Добавляем узел в результат
+			result.push_back(node);
+
+			// Кладем детей в стек (сначала правый, потом левый)
+			if (node->right) {
+				stack[stackSize++] = node->right;
+			}
+			if (node->left) {
+				stack[stackSize++] = node->left;
+			}
+
+		}
+	}
+
 #if defined(DEF_PERF_APPLY) || defined(DEF_PERF_UPDATE)
 
 	/*
