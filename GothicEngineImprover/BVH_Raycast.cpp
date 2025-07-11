@@ -186,7 +186,7 @@ namespace GOTHIC_ENGINE {
 
 #if defined(DEF_PERF_APPLY) || defined(DEF_PERF_UPDATE)
 
-	/*
+#if defined (DEBUG_HOOKS_TRACERAY)
 	HOOK ivk_zCWorld_TraceRayFirstHit  AS(&zCWorld::TraceRayFirstHit, &zCWorld::TraceRayFirstHit_Union);
 	zBOOL __fastcall zCWorld::TraceRayFirstHit_Union(const zVEC3& rayOrigin, const zVEC3& ray, const zCArray<zCVob*>* ignoreVobList, const int traceFlags)
 	{
@@ -215,19 +215,23 @@ namespace GOTHIC_ENGINE {
 		return result;
 	}
 
+	//0x005FFE40 public: virtual int __thiscall zCVob::TraceRay(class zVEC3 const &,class zVEC3 const &,int,struct zTTraceRayReport &)
 
-	HOOK ivk_zCVisual_TraceRay  AS(&zCVisual::TraceRay, &zCVisual::TraceRay_Union);
-	zBOOL zCVisual::TraceRay_Union(const zVEC3& rayOrigin, const zVEC3& ray, const int traceFlags, zTTraceRayReport& report)
+	HOOK ivk_zCVob_TraceRay  AS(&zCVob::TraceRay, &zCVob::TraceRay_Union);
+	zBOOL zCVob::TraceRay_Union(const zVEC3& rayOrigin, const zVEC3& ray, const int traceFlags, zTTraceRayReport& report)
 	{
-		RX_Perf_Start("zCVisual::TraceRay_Union", PerfType::PERF_TYPE_PER_FRAME);
 
-		auto result = THISCALL(ivk_zCVisual_TraceRay)(rayOrigin, ray, traceFlags, report);
+		RX_Perf_Start("zCVob::TraceRay", PerfType::PERF_TYPE_PER_FRAME);
 
-		RX_Perf_End("zCVisual::TraceRay_Union");
+		auto result = THISCALL(ivk_zCVob_TraceRay)(rayOrigin, ray, traceFlags, report);
+
+		RX_Perf_End("zCVob::TraceRay");
 
 		return result;
 	}
-	*/
+
+
+#endif
 
 #endif
 
