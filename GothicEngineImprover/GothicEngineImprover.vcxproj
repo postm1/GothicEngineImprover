@@ -901,6 +901,18 @@ $(ALLUSERSPROFILE)\Union\SDK\Union\v1.0m\Build\incver.exe $(ProjectDir)</Command
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="BVH_Tree_Static.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="BVH_Tree_Static_Build.cpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="BVH_Tree_Static_Utils.cpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Plugin.cpp" />
     <ClCompile Include="Interface.cpp" />
     <ClCompile Include="ZenGin\Gothic_II_Addon\ClassDeclarators_G2A.cpp" />

@@ -6,6 +6,8 @@
 #include "BVH_Debug.cpp"
 #include "AB_Debug.cpp"
 #include "BVH_Build.cpp"
+#include "BVH_Tree_Static_Build.cpp"
+#include "BVH_Tree_Static_Utils.cpp"
 #include "BVH_Build_Utils.cpp"
 #include "zCSubMeshStruct.cpp"
 #include "BVH_Raycast.cpp"

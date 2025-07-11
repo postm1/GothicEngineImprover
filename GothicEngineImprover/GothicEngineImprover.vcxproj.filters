@@ -220,6 +220,9 @@
     <Filter Include="Plugin\Workspace\Plugin\Debug">
       <UniqueIdentifier>{2d2d799f-70b3-4e4a-908f-53e5b112d188}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Plugin\Workspace\Plugin\BVH_LocationMesh">
+      <UniqueIdentifier>{85ce2654-63e1-4ae0-b9ff-4b160afd54c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Interface.cpp">
@@ -2813,6 +2816,15 @@
     </ClInclude>
     <ClInclude Include="BVH_Build_Utils.cpp">
       <Filter>Plugin\Workspace\Plugin\Raycast_Optimize</Filter>
+    </ClInclude>
+    <ClInclude Include="BVH_Tree_Static.h">
+      <Filter>Plugin\Workspace\Plugin\BVH_LocationMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="BVH_Tree_Static_Build.cpp">
+      <Filter>Plugin\Workspace\Plugin\BVH_LocationMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="BVH_Tree_Static_Utils.cpp">
+      <Filter>Plugin\Workspace\Plugin\BVH_LocationMesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

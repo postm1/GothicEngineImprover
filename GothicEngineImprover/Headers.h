@@ -6,6 +6,7 @@
 #include "Utils.h"
 #include "AB_Debug.h"
 #include "BVH_Tree.h"
+#include "BVH_Tree_Static.h"
 #include "SubmeshStructure.h"
 #include "Plugin.h"
 #pragma endregion
