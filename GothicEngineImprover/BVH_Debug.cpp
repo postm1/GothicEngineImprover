@@ -260,6 +260,10 @@ namespace GOTHIC_ENGINE {
 	void Raycast_Loop()
 	{
 
+#if !defined(DEBUG_LOOP_KEYS)
+
+		return;
+#endif
 
 		if (player && !player->inventory2.IsOpen() && !ogame->singleStep && zinput->KeyPressed(KEY_F9))
 		{
