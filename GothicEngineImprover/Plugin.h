@@ -7,4 +7,5 @@ namespace GOTHIC_ENGINE {
   // Add your code here . . .
 
 	AB_Debug debug;
+	BVH_TreeStatic bvhStaticTree;
 }

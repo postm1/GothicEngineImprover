@@ -24,9 +24,8 @@ namespace GOTHIC_ENGINE {
 
 			for (size_t i = 0; i < triIndices.size(); ++i)
 			{
-				auto index = triIndices[i];
-				auto center = centersTrias[index];
-				auto polyBbox = bboxTrias[index];
+				auto center = triIndices[i]->GetCenter();
+				auto polyBbox = triIndices[i]->GetBBox3D();
 
 
 				if (center.n[axis] < middlePoints[axis])
@@ -63,16 +62,15 @@ namespace GOTHIC_ENGINE {
 
 		for (size_t i = 0; i < triIndices.size(); ++i)
 		{
-			auto index = triIndices[i];
-			auto center = centersTrias[index];
+			auto center = triIndices[i]->GetCenter();
 
 			if (center.n[bestAxis] < middlePoint)
 			{
-				left.push_back(index);
+				left.push_back(triIndices[i]);
 			}
 			else
 			{
-				right.push_back(index);
+				right.push_back(triIndices[i]);
 			}
 		}
 
@@ -85,7 +83,7 @@ namespace GOTHIC_ENGINE {
 
 			// sort and split by halves
 			std::sort(triIndices.begin(), triIndices.end(), [&](int a, int b) {
-				return centersTrias[a].n[bestAxis] < centersTrias[b].n[bestAxis];
+				return triIndices[a]->GetCenter().n[bestAxis] < triIndices[b]->GetCenter().n[bestAxis];
 				});
 
 			size_t half = triIndices.size() / 2;
@@ -109,9 +107,11 @@ namespace GOTHIC_ENGINE {
 		{
 			// Находим min/max центров вдоль оси
 			float minVal = FLT_MAX, maxVal = -FLT_MAX;
-			for (int idx : triIndices)
+
+			for (auto& idx : triIndices)
 			{
-				float val = centersTrias[idx].n[axis];
+				float val = idx->GetCenter().n[axis];
+				//float val = centersTrias[idx].n[axis];
 				minVal = min(minVal, val);
 				maxVal = max(maxVal, val);
 			}
@@ -125,11 +125,12 @@ namespace GOTHIC_ENGINE {
 
 			// Заполняем корзины
 			float scale = BINS / (maxVal - minVal);
-			for (int idx : triIndices)
+			for (auto& idx : triIndices)
 			{
-				float val = centersTrias[idx].n[axis];
+				float val = idx->GetCenter().n[axis];
+				//float val = centersTrias[idx].n[axis];
 				int binIdx = min(BINS - 1, (int)((val - minVal) * scale));
-				bins[binIdx].bbox.MergeBox(bboxTrias[idx]);
+				bins[binIdx].bbox.MergeBox(idx->GetBBox3D());
 				bins[binIdx].count++;
 			}
 
@@ -177,9 +178,10 @@ namespace GOTHIC_ENGINE {
 
 		// Разделяем треугольники по лучшему разбиению
 		float minVal = FLT_MAX, maxVal = -FLT_MAX;
-		for (int idx : triIndices)
+		for (auto& idx : triIndices)
 		{
-			float val = centersTrias[idx].n[bestAxis];
+			float val = idx->GetCenter().n[bestAxis];
+			//float val = centersTrias[idx].n[bestAxis];
 			minVal = min(minVal, val);
 			maxVal = max(maxVal, val);
 		}
@@ -188,12 +190,20 @@ namespace GOTHIC_ENGINE {
 
 		//cmd << "SAH split by axis: " << bestAxis << endl;
 
-		for (int idx : triIndices)
+		for (auto& idx : triIndices)
 		{
-			if (centersTrias[idx].n[bestAxis] < splitPos)
+			if (idx->GetCenter().n[bestAxis] < splitPos)
+			{
+				left.push_back(idx);
+			}
+			else
+			{
+				right.push_back(idx);
+			}
+			/*if (centersTrias[idx].n[bestAxis] < splitPos)
 				left.push_back(idx);
 			else
-				right.push_back(idx);
+				right.push_back(idx);*/
 		}
 	}
 
@@ -205,12 +215,13 @@ namespace GOTHIC_ENGINE {
 
 		if (isDebug)
 		{
+			/*
 			for (int i = 0; i < size; ++i)
 			{
 
 				if (bvhDebug.indexDebugCheck.find(input[i]) == bvhDebug.indexDebugCheck.end())
 				{
-					node->triIndices.push_back(input[i]);
+					node->nodePolys.push_back(*input[i]);
 					bvhDebug.indexDebugCheck.insert(input[i]);
 
 
@@ -221,12 +232,12 @@ namespace GOTHIC_ENGINE {
 					Message::Box("Index already exists: " + input[i]);
 				}
 			}
-
+			*/
 			//cmd << "Can't split Node, add: " << size << endl;
 		}
 		else
 		{
-			node->triIndices.assign(input.begin(), input.begin() + size);
+			node->nodePolys.assign(input.begin(), input.begin() + size);
 		}
 
 		bvhDebug.triasCheckerCount += size;
@@ -259,21 +270,14 @@ namespace GOTHIC_ENGINE {
 		}
 
 
-		std::vector<int> leftIndices;
-		std::vector<int> rightIndices;
+		std::vector<zCPolygon*> leftIndices;
+		std::vector<zCPolygon*> rightIndices;
 
 		leftIndices.reserve(triIndices.size() / 2);
 		rightIndices.reserve(triIndices.size() / 2);
 
 		// если уже загрузились, строим дерево быстрым способом, иначе будут подфризы	
-		if (OnLevelFullLoaded_Once)
-		{
-			SplitByBestAxis(node, triIndices, leftIndices, rightIndices, isDebug);
-		}
-		else
-		{
-			SplitByBinnedSAH(node, triIndices, leftIndices, rightIndices, isDebug);
-		}
+		SplitByBinnedSAH(node, triIndices, leftIndices, rightIndices, isDebug);
 
 
 		//if (isDebug) cmd << triIndices.size() << " -> " << leftIndices.size() << " | " << rightIndices.size() << endl;
@@ -314,57 +318,77 @@ namespace GOTHIC_ENGINE {
 		}
 
 
-		std::vector<int> triIndices; // Индексы треугольников
+		//std::vector<int> triIndices; // Индексы треугольников
 
-		triIndices.resize(subMesh->triList.GetNum());
+		//triIndices.resize(subMesh->triList.GetNum());
 
 		// заполняем массив от 0 до n-1
-		std::iota(triIndices.begin(), triIndices.end(), 0);
+		//std::iota(triIndices.begin(), triIndices.end(), 0);
 
 
 
-		centersTrias.reserve(subMesh->triList.GetNum());
-		bboxTrias.reserve(subMesh->triList.GetNum());
-
-		int size = triIndices.size();
-
-		for (int i = 0; i < size; ++i)
-		{
-			centersTrias[i] = GetTriangleCenter(i);
-			bboxTrias[i] = GetTriangleBbox(i);
-		}
-
+		//centersTrias.reserve(subMesh->triList.GetNum());
+		//bboxTrias.reserve(subMesh->triList.GetNum());
 
 		//cmd << "BuildStart: " << proto->GetVisualName() << endl;
 
 
+		zCPolygon**& trisList = ogame->GetWorld()->bspTree.treePolyList;
+		int numPolys = ogame->GetWorld()->bspTree.numPolys;
 
-		root = BuildNode(NULL, triIndices, 0, isDebugBuild);
+		std::unordered_set<zCPolygon*> hashSet;
 
-		ScaleBboxes(root);
+		std::vector<zCPolygon*> inputPolys;
+
+		inputPolys.reserve(numPolys);
+
+		for (int i = 0; i < numPolys; i++)
+		{
+			zCPolygon* poly = trisList[i];
+
+			if (!poly) continue;
+
+			if (poly->flags.portalPoly != 0) continue;
+			if (poly->flags.ghostOccluder != 0) continue;
+
+			auto mat = poly->material;
+
+			if (mat && mat->matGroup == zTMat_Group::zMAT_GROUP_WATER)
+			{
+				continue;
+			}
+
+			if (mat && mat->noCollDet)
+			{
+				continue;
+			}
+
+			if (hashSet.find(poly) == hashSet.end())
+			{
+				hashSet.insert(poly);
+				inputPolys.push_back(poly);
+			}
+
+		}
+
+		cmd << "Static::Input polys: " << inputPolys.size() << endl;
+
+		root = BuildNode(NULL, inputPolys, 0, isDebugBuild);
+
+		//ScaleBboxes(root);
 
 #if defined (DEBUG_BUILD_BVH)
 		RX_End(53);
 #endif
 
-		bboxTrias.clear();
-		centersTrias.clear();
+		
 
-		if (showBuildMessage)
-		{
-			cmd << "Build: "
-				<< proto->GetVisualName()
-				<< " Name: " << proto->GetObjectName()
-				<< " | Tris: " << bvhDebug.triasCheckerCount << "/" << subMesh->triList.GetNum()
-				<< " | Nodes: " << nodesCount
-				<< " | " << RX_PerfString(53) << endl;
-		}
-
+		
 
 		if (isDebugBuild)
 		{
 
-
+			/*
 			if (bvhDebug.triasCheckerCount != subMesh->triList.GetNum() || bvhDebug.indexDebugCheck.size() != bvhDebug.triasCheckerCount)
 			{
 				cmd << "-------- BUILD WRONG: " << proto->GetVisualName() << " " << bvhDebug.triasCheckerCount
@@ -381,6 +405,7 @@ namespace GOTHIC_ENGINE {
 				Message::Box("BAD TREE");
 				cmd << "Tree Is BAD: NOT ALL!!! -> " << bad << endl;
 			}
+			*/
 		}
 
 	}

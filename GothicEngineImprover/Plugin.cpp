@@ -19,6 +19,7 @@ namespace GOTHIC_ENGINE {
       debug.Init();
 #endif
 
+     
   }
 
   void Game_Exit() {
@@ -60,6 +61,7 @@ namespace GOTHIC_ENGINE {
       OnLevelFullLoaded_Once = true;
 
       
+      bvhStaticTree.Build();
 
       //cmd << "RAM #2: " << RAMUsed() / 1000 << endl;
   }

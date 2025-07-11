@@ -19,8 +19,6 @@ namespace GOTHIC_ENGINE {
 
 		BVHNodeStatic* root;
 
-		std::vector<zVEC3> centersTrias;
-		std::vector<zTBBox3D> bboxTrias;
 		int nodesCount = 0;
 
 		void SplitByBestAxis(BVHNodeStatic* node, std::vector<zCPolygon*>& triIndices, std::vector<zCPolygon*>& left, std::vector<zCPolygon*>& right, bool isDebug);

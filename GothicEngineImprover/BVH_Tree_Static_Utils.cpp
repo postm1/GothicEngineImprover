@@ -33,6 +33,20 @@ namespace GOTHIC_ENGINE {
 		}
 	}
 
+	zTBBox3D BVH_TreeStatic::CalculateBBox(const std::vector<zCPolygon*>& indices)
+	{
+		zTBBox3D bbox;
+
+		bbox.Init();
+
+		// Для каждого индекса из списка
+		for (size_t i = 0; i < indices.size(); i++)
+		{
+			bbox.MergeBox(indices[i]->GetBBox3D());
+		}
+
+		return bbox;
+	}
 
 	zVEC3 BVH_TreeStatic::GetTriangleCenter(zCPolygon* poly)
 	{
