@@ -230,6 +230,25 @@ namespace GOTHIC_ENGINE {
 		return result;
 	}
 
+	//0x00532550 public: int __thiscall zCBspTree::TraceRay(class zVEC3 const &,class zVEC3 const &,int,class zVEC3 &,class zCPolygon * &,class zCArray<class zCVob *> *)const 
+	HOOK ivk_zCBspTree_TraceRay  AS(&zCBspTree::TraceRay, &zCBspTree::TraceRay_Union);
+	zBOOL zCBspTree::TraceRay_Union(const zVEC3& start,
+		const zVEC3& end,
+		const int		traceFlags,
+		zVEC3& inters,
+		zCPolygon*& hitPoly,
+		zCArray<zCVob*>* vobList)
+	{
+
+		RX_Perf_Start("zCBspTree::TraceRay", PerfType::PERF_TYPE_PER_FRAME);
+
+		auto result = THISCALL(ivk_zCBspTree_TraceRay)(start, end, traceFlags, inters, hitPoly, vobList);
+
+		RX_Perf_End("zCBspTree::TraceRay");
+
+		return result;
+	}
+
 
 #endif
 
