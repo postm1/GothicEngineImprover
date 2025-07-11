@@ -301,15 +301,6 @@ namespace GOTHIC_ENGINE {
 		bool isDebugBuild = false;
 		bool showBuildMessage = false;
 
-#if defined (DEBUG_BUILD_BVH)
-
-		if (showBuildMessage) cmd << "\n========= BUILD: " << proto->GetVisualName() << endl;
-
-
-		
-#endif // DEBUG
-
-
 		RX_Begin(53);
 
 		bvhDebug.triasCheckerCount = 0;
@@ -429,16 +420,27 @@ namespace GOTHIC_ENGINE {
 		zREAL alpha = 9999;
 		zREAL tmin, tmax;
 
+		zTBBox3D rayBox;
+		rayBox.Init();
+		rayBox.AddPoint(rayOrigin);
+		rayBox.AddPoint(rayOrigin + rayDir);
+
 		while (stackPtr > 0)
 		{
 			BVHNodeStatic* node = stack[--stackPtr];
 
+			/*
 #if defined(DEBUG_BUILD_BVH)
 			globalStackDepth = max(globalStackDepth, stackPtr);
 			raycastReport.NodeTreeCheckCounter++;
 			tmin = tmax = 1.0f;
 #endif
+*/
 
+			/*if (!node->bbox.IsIntersecting(rayBox))
+			{
+				continue;
+			}*/
 
 			// ѕроверка пересечени€ луча с AABB узла (с учетом bestAlpha дл€ early-out)
 			if (!(node->bbox.IsIntersecting(rayOrigin, rayDir, tmin, tmax) && tmax >= 0.0f && tmin <= 1.0f))

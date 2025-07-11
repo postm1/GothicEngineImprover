@@ -257,8 +257,15 @@ namespace GOTHIC_ENGINE {
 		std::vector<BVHNode*>& result
 	);
 
-	void Raycast_Loop2()
+	void Raycast_Loop()
 	{
+
+#if !defined(DEBUG_LOOP_KEYS)
+
+		return;
+#endif
+
+		/*
 		if (zKeyPressed(KEY_F1))
 		{
 			zinput->ClearKeyBuffer();
@@ -267,9 +274,9 @@ namespace GOTHIC_ENGINE {
 			auto dir = player->GetAtVectorWorld() * 1500;
 			auto end = pos + dir;
 
-			RX_Begin(50);
+			RX_Begin(42);
 			ogame->GetWorld()->TraceRayNearestHit(pos, dir, (zCVob*)NULL, zTRACERAY_STAT_POLY | zTRACERAY_VOB_IGNORE_NO_CD_DYN | zTRACERAY_VOB_IGNORE_CHARACTER);
-			RX_End(50);
+			RX_End(42);
 
 			if (ogame->GetWorld()->traceRayReport.foundHit)
 			{
@@ -278,12 +285,12 @@ namespace GOTHIC_ENGINE {
 
 			debug.AddLine(pos, end, GFX_RED, 5000);
 
-			printWinC(RX_PerfString(50));
+			printWinC("Engine: " + RX_PerfString(42));
 
-
-			RX_Begin(41);
 			zVEC3 result;
 
+			RX_Begin(41);
+			
 			bool tryFound = bvhStaticTree.RayCast(pos, dir, result);
 
 			RX_End(41);
@@ -292,18 +299,11 @@ namespace GOTHIC_ENGINE {
 			{
 				debug.AddVerticalLine(result + player->GetRightVectorWorld() * 10, 200, GFX_BLUE, 5000);
 			}
-			
-			printWinC(RX_PerfString(41));
+
+			printWinC("BHV: " + RX_PerfString(41));
 		}
-	}
 
-	void Raycast_Loop()
-	{
-
-#if !defined(DEBUG_LOOP_KEYS)
-
-		return;
-#endif
+		*/
 
 		if (player && !player->inventory2.IsOpen() && !ogame->singleStep && zinput->KeyPressed(KEY_F9))
 		{

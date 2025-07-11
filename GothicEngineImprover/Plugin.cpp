@@ -45,7 +45,7 @@ namespace GOTHIC_ENGINE {
       flagsTraceHistory.clear();
 #endif
 
-      Raycast_Loop2();
+      
 
   }
 
@@ -63,7 +63,7 @@ namespace GOTHIC_ENGINE {
       OnLevelFullLoaded_Once = true;
 
       
-      bvhStaticTree.Build();
+      //bvhStaticTree.Build();
 
       //cmd << "RAM #2: " << RAMUsed() / 1000 << endl;
   }
