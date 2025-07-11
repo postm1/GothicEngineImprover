@@ -82,8 +82,8 @@ namespace GOTHIC_ENGINE {
 
 
 			// sort and split by halves
-			std::sort(triIndices.begin(), triIndices.end(), [&](int a, int b) {
-				return triIndices[a]->GetCenter().n[bestAxis] < triIndices[b]->GetCenter().n[bestAxis];
+			std::sort(triIndices.begin(), triIndices.end(), [&](zCPolygon* a, zCPolygon* b) {
+				return a->GetCenter().n[bestAxis] < b->GetCenter().n[bestAxis];
 				});
 
 			size_t half = triIndices.size() / 2;
@@ -306,9 +306,11 @@ namespace GOTHIC_ENGINE {
 		if (showBuildMessage) cmd << "\n========= BUILD: " << proto->GetVisualName() << endl;
 
 
-		RX_Begin(53);
+		
 #endif // DEBUG
 
+
+		RX_Begin(53);
 
 		bvhDebug.triasCheckerCount = 0;
 
@@ -378,10 +380,12 @@ namespace GOTHIC_ENGINE {
 		//ScaleBboxes(root);
 
 #if defined (DEBUG_BUILD_BVH)
-		RX_End(53);
+		
 #endif
 
-		
+		RX_End(53);
+
+		cmd << "BuildTime: " << RX_PerfString(53) << endl;
 
 		
 
@@ -408,5 +412,83 @@ namespace GOTHIC_ENGINE {
 			*/
 		}
 
+	}
+
+
+	zBOOL BVH_TreeStatic::RayCast(const zVEC3& rayOrigin, const zVEC3& rayDir, zVEC3& foundInter)
+	{
+		BVHNodeStatic* stack[100];  // Статический стек с запасом
+		int stackPtr = 0;    // Указатель на вершину стека
+
+		stack[stackPtr++] = this->root;
+
+		bestAlphaGlobal = 9000.0f;
+
+		zBOOL hitFound = FALSE;
+		zVEC3 inters;
+		zREAL alpha = 9999;
+		zREAL tmin, tmax;
+
+		while (stackPtr > 0)
+		{
+			BVHNodeStatic* node = stack[--stackPtr];
+
+#if defined(DEBUG_BUILD_BVH)
+			globalStackDepth = max(globalStackDepth, stackPtr);
+			raycastReport.NodeTreeCheckCounter++;
+			tmin = tmax = 1.0f;
+#endif
+
+
+			// Проверка пересечения луча с AABB узла (с учетом bestAlpha для early-out)
+			if (!(node->bbox.IsIntersecting(rayOrigin, rayDir, tmin, tmax) && tmax >= 0.0f && tmin <= 1.0f))
+			{
+				continue;
+			}
+
+			if (tmin > raycastReport.bestAlphaGlobal)
+			{
+				continue;
+			}
+
+			// Проверка пересечения с треугольниками в листе
+			for (zCPolygon* poly : node->nodePolys)
+			{
+#if defined(DEBUG_BUILD_BVH)
+				raycastReport.TrisTreeCheckCounter++;
+#endif
+
+
+				//if (proto->CheckRayPolyIntersection(subMesh, triIdx, rayOrigin, rayDir, inters, alpha))
+				if (poly->CheckRayPolyIntersection(rayOrigin, rayDir, inters, alpha))
+				{
+					hitFound = true;
+
+					if (alpha < raycastReport.bestAlphaGlobal)
+					{
+						//cmd << alpha << " < " << bestAlphaGlobal << endl;
+
+						bestAlphaGlobal = alpha;
+						foundInter = inters;
+					}
+
+					/*
+					// FIRSTHIT
+					if (raycastReport.globalFirstHitMode)
+					{
+						return true;
+					}
+					*/
+				}
+			}
+
+
+			// Добавляем дочерние узлы в стек (правый -> левый для DFS)
+			if (node->right) stack[stackPtr++] = node->right;
+			if (node->left)  stack[stackPtr++] = node->left;
+
+		}
+
+		return hitFound;
 	}
 }

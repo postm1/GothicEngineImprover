@@ -7,7 +7,7 @@ namespace GOTHIC_ENGINE {
 	struct BVHNodeStatic
 	{
 		zTBBox3D bbox;
-		std::vector<zCPolygon> nodePolys;
+		std::vector<zCPolygon*> nodePolys;
 		BVHNodeStatic* left = nullptr;
 		BVHNodeStatic* right = nullptr;
 		BVHNodeStatic* parent = nullptr;
@@ -20,6 +20,7 @@ namespace GOTHIC_ENGINE {
 		BVHNodeStatic* root;
 
 		int nodesCount = 0;
+		float bestAlphaGlobal = 9999.9f;
 
 		void SplitByBestAxis(BVHNodeStatic* node, std::vector<zCPolygon*>& triIndices, std::vector<zCPolygon*>& left, std::vector<zCPolygon*>& right, bool isDebug);
 		void AddAllTriangles(BVHNodeStatic* node, std::vector<zCPolygon*>& input, bool isDebug);
@@ -36,6 +37,8 @@ namespace GOTHIC_ENGINE {
 
 
 		BVH_TreeStatic::BVH_TreeStatic();
+
+		zBOOL BVH_TreeStatic::RayCast(const zVEC3& rayOrigin, const zVEC3& rayDir, zVEC3& foundInter);
 
 	};
 }

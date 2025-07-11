@@ -45,6 +45,8 @@ namespace GOTHIC_ENGINE {
       flagsTraceHistory.clear();
 #endif
 
+      Raycast_Loop2();
+
   }
 
   void OnLevelFullLoaded()
