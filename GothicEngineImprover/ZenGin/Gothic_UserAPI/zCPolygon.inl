@@ -3,3 +3,4 @@
 // User API for zCPolygon
 // Add your methods here
 
+zCMaterial* GetMaterial() const { return material; };

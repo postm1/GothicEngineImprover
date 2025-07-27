@@ -4,3 +4,4 @@
 // Add your methods here
 
 zBOOL zCProgMeshProto::TraceRay_Union(const zVEC3& rayOrigin, const zVEC3& ray, const int traceFlags, zTTraceRayReport& report);
+zBOOL zCProgMeshProto::CheckRayPolyIntersectionExactMethod(zCProgMeshProto::zCSubMesh* subMesh, int triIndex, const zVEC3& rayOrigin, const zVEC3& ray, zVEC3& inters, zREAL& alpha);

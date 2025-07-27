@@ -3,6 +3,186 @@
 
 namespace GOTHIC_ENGINE {
 
+#define zMV_UP							(zVEC3(0,+100000,0))
+#define zMV_DOWN						(zVEC3(0,-100000,0))
+#define zMV_GROUND_OFFSET				(zREAL(0.5F))
+#define zMV_WALLSLIDE_ANGLE				(zREAL(25))
+#define zMV_WALLSLIDE_TURN_VELOCITY		(zREAL(0.14F))
+
+	bool isExactVobMethod = false;
+
+	HOOK ivk_zCCollObjectCharacter_FindFloorWaterCeiling AS(&zCCollObjectCharacter::FindFloorWaterCeiling, &zCCollObjectCharacter::FindFloorWaterCeiling_Union);
+	void __fastcall zCCollObjectCharacter::FindFloorWaterCeiling_Union(zVEC3 const& testLocation, zCCollObjectCharacter::zTSpatialState& spatialState)
+	{
+
+		RX_Perf_Start("ivk_zCCollObjectCharacter_FindFloorWaterCeiling", PerfType::PERF_TYPE_PER_FRAME);
+
+
+		// Turn on new exact triangle-ray collision method
+		isExactVobMethod = useNewMethodVobColl;
+
+		spatialState.m_bIsUninited = FALSE;
+
+		zCVob* thisVob = GetVob();
+		zCWorld* world = thisVob->GetHomeWorld();
+
+		
+		// FLOOR
+		spatialState.m_poCeilingPoly = 0;
+		spatialState.m_poWaterPoly = 0;
+
+		world->TraceRayNearestHitCache(testLocation, zMV_DOWN, (zCVob*)thisVob, zTRACERAY_STAT_POLY |
+			zTRACERAY_VOB_IGNORE_CHARACTER |
+			zTRACERAY_VOB_IGNORE_NO_CD_DYN |
+			zTRACERAY_VOB_IGNORE_PROJECTILES |
+			zTRACERAY_POLY_TEST_WATER,
+		&m_oDownRayCache);
+
+		// Turn off new exact triangle-ray collision method
+		isExactVobMethod = false;
+
+		if (!world->traceRayReport.foundHit)
+		{
+			spatialState.m_fFloorY = spatialState.m_fLastFloorY;
+			spatialState.m_fCeilingY = FLT_MAX;
+			spatialState.m_poFloorPoly = 0;
+		}
+		else
+		{
+			const zVEC3& rayIntersection = world->traceRayReport.foundIntersection;
+			spatialState.m_fLastFloorY = spatialState.m_fFloorY;
+			spatialState.m_fFloorY = rayIntersection[VY] + zMV_GROUND_OFFSET;
+			spatialState.m_fWaterY = spatialState.m_fFloorY;
+			spatialState.m_poFloorPoly = world->traceRayReport.foundPoly;
+			spatialState.m_bFloorIsStair = (world->traceRayReport.foundVob != 0) &&
+				(world->traceRayReport.foundVob->classDef == zCVobStair::classDef);
+
+			if ((spatialState.m_poFloorPoly) &&
+				(spatialState.m_poFloorPoly->GetMaterial()) &&
+				(spatialState.m_poFloorPoly->GetMaterial()->matGroup == zMAT_GROUP_WATER) &&
+				(!m_oConfig.m_bTreatWaterAsSolid)								// Wasser komplett ignorieren?
+				)
+			{
+
+
+				spatialState.m_poWaterPoly = spatialState.m_poFloorPoly;
+				spatialState.m_fWaterY = rayIntersection[VY];
+				world->TraceRayNearestHitCache(testLocation, zMV_DOWN, thisVob, zTRACERAY_STAT_POLY |
+					zTRACERAY_VOB_IGNORE_CHARACTER |
+					zTRACERAY_VOB_IGNORE_NO_CD_DYN |
+					zTRACERAY_VOB_IGNORE_PROJECTILES,
+					&m_oDownRayCache);
+
+				const zVEC3& rayIntersection = world->traceRayReport.foundIntersection;
+				if (!world->traceRayReport.foundHit)
+				{
+					
+				};
+
+				spatialState.m_fFloorY = rayIntersection[VY];
+				spatialState.m_poFloorPoly = world->traceRayReport.foundPoly;
+			};
+			spatialState.m_bFloorIsVob = (world->traceRayReport.foundVob != 0);
+
+			if (spatialState.m_bFloorIsVob) {
+				zCVob::CheckAutoLink(thisVob, world->traceRayReport.foundVob);
+			};
+		}
+
+		// CEILING
+		{
+			{
+				world->TraceRayNearestHitCache(testLocation, zMV_UP, thisVob, zTRACERAY_STAT_POLY |
+					zTRACERAY_VOB_IGNORE_CHARACTER |
+					zTRACERAY_VOB_IGNORE_NO_CD_DYN |
+					zTRACERAY_POLY_TEST_WATER |
+					zTRACERAY_VOB_IGNORE_PROJECTILES,
+					&m_oUpRayCache);
+			};
+			if (!world->traceRayReport.foundHit)
+			{
+				spatialState.m_fCeilingY = zREAL(1000000.0F);
+				spatialState.m_poCeilingPoly = 0;
+			}
+			else
+			{
+				const zVEC3& rayIntersection = world->traceRayReport.foundIntersection;
+				spatialState.m_fCeilingY = rayIntersection[VY] - zMV_GROUND_OFFSET;
+				spatialState.m_poCeilingPoly = world->traceRayReport.foundPoly;
+				if (spatialState.m_poCeilingPoly || world->traceRayReport.foundVob)
+				{
+					
+					if ((spatialState.m_poCeilingPoly && spatialState.m_poCeilingPoly->GetMaterial())
+						&& (spatialState.m_poCeilingPoly->GetMaterial()->matGroup == zMAT_GROUP_WATER)
+						&& (!m_oConfig.m_bTreatWaterAsSolid))
+					{
+						
+						spatialState.m_poWaterPoly = spatialState.m_poCeilingPoly;
+						spatialState.m_fWaterY
+							= spatialState.m_fCeilingY;
+
+					
+						world->TraceRayNearestHitCache(testLocation, zMV_UP, thisVob, zTRACERAY_VOB_IGNORE_CHARACTER |
+							zTRACERAY_VOB_IGNORE_NO_CD_DYN |
+							zTRACERAY_VOB_IGNORE_PROJECTILES,
+							&m_oUpRayCache);
+						spatialState.m_fCeilingY = (world->traceRayReport.foundHit) ? world->traceRayReport.foundIntersection[VY] : FLT_MAX;
+					}
+					else
+					{
+						
+						if ((spatialState.m_fWaterY == spatialState.m_fFloorY) && (this->m_oConfig.m_eState == zCONFIG_STATE_DIVE))
+						{
+							spatialState.m_fWaterY = spatialState.m_fCeilingY + zREAL(100000);
+						};
+
+					};
+				};
+			};
+		};
+
+		RX_Perf_End("ivk_zCCollObjectCharacter_FindFloorWaterCeiling");
+	}
+
+	zBOOL zCProgMeshProto::CheckRayPolyIntersectionExactMethod(zCProgMeshProto::zCSubMesh* subMesh, int triIndex, const zVEC3& rayOrigin, const zVEC3& ray, zVEC3& inters, zREAL& alpha)
+	{
+		const zVEC3& pos0 = posList[subMesh->wedgeList[subMesh->triList[triIndex].wedge[0]].position];
+		const zVEC3& pos1 = posList[subMesh->wedgeList[subMesh->triList[triIndex].wedge[1]].position];
+		const zVEC3& pos2 = posList[subMesh->wedgeList[subMesh->triList[triIndex].wedge[2]].position];
+
+		const float EPSILON = 0.000001f;
+
+		zVEC3 edge1 = pos1 - pos0;
+		zVEC3 edge2 = pos2 - pos0;
+		zVEC3 h = ray.Cross(edge2);
+		float a = edge1.Dot(h);
+
+		if (a > -EPSILON && a < EPSILON)
+			return false;    // Ray is parallel to the triangle
+
+		float f = 1.0f / a;
+		zVEC3 s = rayOrigin - pos0;
+		float u = f * s.Dot(h);
+
+		if (u < 0.0f || u > 1.0f)
+			return false;
+
+		zVEC3 q = s.Cross(edge1);
+		float v = f * ray.Dot(q);
+
+		if (v < 0.0f || u + v > 1.0f)
+			return false;
+
+		alpha = f * edge2.Dot(q);
+
+		if (alpha > EPSILON)
+		{
+			inters = rayOrigin + ray * alpha;
+			return true;
+		}
+
+		return false;
+	};
 
 
 	zBOOL TraceBVHNodeStack(const zVEC3& rayOrigin, const zVEC3& rayDir, zCSubMeshStruct* meshEntry)
@@ -51,8 +231,26 @@ namespace GOTHIC_ENGINE {
 				raycastReport.TrisTreeCheckCounter++;
 #endif
 
+				auto resultHitCheck = false;
 
-				if (proto->CheckRayPolyIntersection(subMesh, triIdx, rayOrigin, rayDir, inters, alpha))
+				if (isExactVobMethod)
+				{
+					auto result2 = proto->CheckRayPolyIntersection(subMesh, triIdx, rayOrigin, rayDir, inters, alpha);
+
+					resultHitCheck = proto->CheckRayPolyIntersectionExactMethod(subMesh, triIdx, rayOrigin, rayDir, inters, alpha);
+					
+
+					if (result2 != resultHitCheck)
+					{
+						printWinC("NO MATCH: " + Z result2 + "/" + Z resultHitCheck);
+					}
+				}
+				else
+				{
+					resultHitCheck = proto->CheckRayPolyIntersection(subMesh, triIdx, rayOrigin, rayDir, inters, alpha);
+				}
+			
+				if (resultHitCheck)
 				{
 					hitFound = true;
 
@@ -401,12 +599,13 @@ namespace GOTHIC_ENGINE {
 					};
 				};
 				*/
+				
 
 
 
 				
 				
-				/*
+				
 				if (false && !freezeDebug)
 				{
 					auto posFoundDiff = raycastReport.intersGlobal.Distance(report.foundIntersection);
@@ -478,7 +677,7 @@ namespace GOTHIC_ENGINE {
 						DrawVisualObject(this, time, bestTriIndex);
 					}
 				}
-				*/
+				
 			}
 			// если запись не нашлась, вызывает обычный код, а новая запись будет добавлена на след. кадрах
 			else
@@ -504,7 +703,6 @@ namespace GOTHIC_ENGINE {
 				report.foundPolyNormal = (*raycastReport.foundPlaneGlobal).normal;
 			}
 		}
-
 
 		RX_Perf_End("zCProgMeshProto::TraceRay_Union");
 

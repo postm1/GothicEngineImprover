@@ -40,9 +40,9 @@ namespace GOTHIC_ENGINE {
 #define F(a) a * FACTOR			// 8
 
 
-//#define DEF_PERF_APPLY
-//#define DEBUG_BUILD_BVH
-//#define DEBUG_LOOP_KEYS
+#define DEF_PERF_APPLY
+#define DEBUG_BUILD_BVH
+#define DEBUG_LOOP_KEYS
 //#define DEBUG_HOOKS_TRACERAY
 
 	zCCamera*& pCamera = *(zCCamera**)0x008D7F94;
@@ -145,6 +145,7 @@ namespace GOTHIC_ENGINE {
 	int globalStackDepth = 0;
 	float sizeUnloatDestr = 0.0f;
 	bool showModel = false;
+	bool useNewMethodVobColl = false;
 
 
 	std::map<std::string, PerfStruct> perfArray;

@@ -307,9 +307,9 @@ namespace GOTHIC_ENGINE {
 
 		if (player && !player->inventory2.IsOpen() && !ogame->singleStep && zinput->KeyPressed(KEY_F9))
 		{
-			isOldMethod = !isOldMethod;
+			useNewMethodVobColl = !useNewMethodVobColl;
 
-			if (isOldMethod)
+			if (!useNewMethodVobColl)
 			{
 				printWinC("Íîâûé ðåæèì: ÎÒÊËÞ×ÅÍ");
 
@@ -322,6 +322,8 @@ namespace GOTHIC_ENGINE {
 
 			zinput->ClearKeyBuffer();
 		}
+
+		return;
 
 		if (!freezeDebug)
 		{
