@@ -2814,7 +2814,7 @@
     <ClInclude Include="AB_Debug.cpp">
       <Filter>Plugin\Workspace\Plugin\Debug</Filter>
     </ClInclude>
-    <ClInclude Include="BVH_Build_Utils.cpp">
+    <ClInclude Include="BVH_Common_Utils.cpp">
       <Filter>Plugin\Workspace\Plugin\Raycast_Optimize</Filter>
     </ClInclude>
     <ClInclude Include="BVH_Tree_Static.h">

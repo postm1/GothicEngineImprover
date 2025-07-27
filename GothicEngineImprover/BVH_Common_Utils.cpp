@@ -119,4 +119,45 @@ namespace GOTHIC_ENGINE {
 			}
 		}
 	}
+
+	// EXACT Ray-Triangle method
+	zBOOL zCProgMeshProto::CheckRayPolyIntersectionExactMethod(zCProgMeshProto::zCSubMesh* subMesh, int triIndex, const zVEC3& rayOrigin, const zVEC3& ray, zVEC3& inters, zREAL& alpha)
+	{
+		const zVEC3& pos0 = posList[subMesh->wedgeList[subMesh->triList[triIndex].wedge[0]].position];
+		const zVEC3& pos1 = posList[subMesh->wedgeList[subMesh->triList[triIndex].wedge[1]].position];
+		const zVEC3& pos2 = posList[subMesh->wedgeList[subMesh->triList[triIndex].wedge[2]].position];
+
+		const float EPSILON = 0.000001f;
+
+		zVEC3 edge1 = pos1 - pos0;
+		zVEC3 edge2 = pos2 - pos0;
+		zVEC3 h = ray.Cross(edge2);
+		float a = edge1.Dot(h);
+
+		if (a > -EPSILON && a < EPSILON)
+			return false;    // Ray is parallel to the triangle
+
+		float f = 1.0f / a;
+		zVEC3 s = rayOrigin - pos0;
+		float u = f * s.Dot(h);
+
+		if (u < 0.0f || u > 1.0f)
+			return false;
+
+		zVEC3 q = s.Cross(edge1);
+		float v = f * ray.Dot(q);
+
+		if (v < 0.0f || u + v > 1.0f)
+			return false;
+
+		alpha = f * edge2.Dot(q);
+
+		if (alpha > EPSILON)
+		{
+			inters = rayOrigin + ray * alpha;
+			return true;
+		}
+
+		return false;
+	};
 }

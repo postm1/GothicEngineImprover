@@ -40,6 +40,13 @@ namespace GOTHIC_ENGINE {
 #define F(a) a * FACTOR			// 8
 
 
+#define zMV_UP							(zVEC3(0,+100000,0))
+#define zMV_DOWN						(zVEC3(0,-100000,0))
+#define zMV_GROUND_OFFSET				(zREAL(0.5F))
+#define zMV_WALLSLIDE_ANGLE				(zREAL(25))
+#define zMV_WALLSLIDE_TURN_VELOCITY		(zREAL(0.14F))
+
+
 #define DEF_PERF_APPLY
 #define DEBUG_BUILD_BVH
 #define DEBUG_LOOP_KEYS

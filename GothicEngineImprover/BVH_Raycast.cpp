@@ -3,15 +3,11 @@
 
 namespace GOTHIC_ENGINE {
 
-#define zMV_UP							(zVEC3(0,+100000,0))
-#define zMV_DOWN						(zVEC3(0,-100000,0))
-#define zMV_GROUND_OFFSET				(zREAL(0.5F))
-#define zMV_WALLSLIDE_ANGLE				(zREAL(25))
-#define zMV_WALLSLIDE_TURN_VELOCITY		(zREAL(0.14F))
+
 
 	bool isExactVobMethod = false;
 
-	HOOK ivk_zCCollObjectCharacter_FindFloorWaterCeiling AS(&zCCollObjectCharacter::FindFloorWaterCeiling, &zCCollObjectCharacter::FindFloorWaterCeiling_Union);
+	//HOOK ivk_zCCollObjectCharacter_FindFloorWaterCeiling AS(&zCCollObjectCharacter::FindFloorWaterCeiling, &zCCollObjectCharacter::FindFloorWaterCeiling_Union);
 	void __fastcall zCCollObjectCharacter::FindFloorWaterCeiling_Union(zVEC3 const& testLocation, zCCollObjectCharacter::zTSpatialState& spatialState)
 	{
 
@@ -144,45 +140,7 @@ namespace GOTHIC_ENGINE {
 		RX_Perf_End("ivk_zCCollObjectCharacter_FindFloorWaterCeiling");
 	}
 
-	zBOOL zCProgMeshProto::CheckRayPolyIntersectionExactMethod(zCProgMeshProto::zCSubMesh* subMesh, int triIndex, const zVEC3& rayOrigin, const zVEC3& ray, zVEC3& inters, zREAL& alpha)
-	{
-		const zVEC3& pos0 = posList[subMesh->wedgeList[subMesh->triList[triIndex].wedge[0]].position];
-		const zVEC3& pos1 = posList[subMesh->wedgeList[subMesh->triList[triIndex].wedge[1]].position];
-		const zVEC3& pos2 = posList[subMesh->wedgeList[subMesh->triList[triIndex].wedge[2]].position];
-
-		const float EPSILON = 0.000001f;
-
-		zVEC3 edge1 = pos1 - pos0;
-		zVEC3 edge2 = pos2 - pos0;
-		zVEC3 h = ray.Cross(edge2);
-		float a = edge1.Dot(h);
-
-		if (a > -EPSILON && a < EPSILON)
-			return false;    // Ray is parallel to the triangle
-
-		float f = 1.0f / a;
-		zVEC3 s = rayOrigin - pos0;
-		float u = f * s.Dot(h);
-
-		if (u < 0.0f || u > 1.0f)
-			return false;
-
-		zVEC3 q = s.Cross(edge1);
-		float v = f * ray.Dot(q);
-
-		if (v < 0.0f || u + v > 1.0f)
-			return false;
-
-		alpha = f * edge2.Dot(q);
-
-		if (alpha > EPSILON)
-		{
-			inters = rayOrigin + ray * alpha;
-			return true;
-		}
-
-		return false;
-	};
+	
 
 
 	zBOOL TraceBVHNodeStack(const zVEC3& rayOrigin, const zVEC3& rayDir, zCSubMeshStruct* meshEntry)
@@ -230,27 +188,87 @@ namespace GOTHIC_ENGINE {
 #if defined(DEBUG_BUILD_BVH)
 				raycastReport.TrisTreeCheckCounter++;
 #endif
-
-				auto resultHitCheck = false;
-
-				if (isExactVobMethod)
+			
+				if (proto->CheckRayPolyIntersection(subMesh, triIdx, rayOrigin, rayDir, inters, alpha))
 				{
-					auto result2 = proto->CheckRayPolyIntersection(subMesh, triIdx, rayOrigin, rayDir, inters, alpha);
+					hitFound = true;
 
-					resultHitCheck = proto->CheckRayPolyIntersectionExactMethod(subMesh, triIdx, rayOrigin, rayDir, inters, alpha);
-					
-
-					if (result2 != resultHitCheck)
+					if (alpha < raycastReport.bestAlphaGlobal)
 					{
-						printWinC("NO MATCH: " + Z result2 + "/" + Z resultHitCheck);
+						//cmd << alpha << " < " << bestAlphaGlobal << endl;
+
+						raycastReport.bestAlphaGlobal = alpha;
+						raycastReport.bestTreeIndexGlobal = triIdx;
+						raycastReport.intersGlobal = inters;
+						raycastReport.foundPlaneGlobal = &(subMesh->triPlaneList[subMesh->triPlaneIndexList[raycastReport.bestTreeIndexGlobal]]);
+					}
+
+
+					// FIRSTHIT
+					if (raycastReport.globalFirstHitMode)
+					{
+						return true;
 					}
 				}
-				else
-				{
-					resultHitCheck = proto->CheckRayPolyIntersection(subMesh, triIdx, rayOrigin, rayDir, inters, alpha);
-				}
-			
-				if (resultHitCheck)
+			}
+
+
+			// Добавляем дочерние узлы в стек (правый -> левый для DFS)
+			if (node->right) stack[stackPtr++] = node->right;
+			if (node->left)  stack[stackPtr++] = node->left;
+
+		}
+
+		return hitFound;
+	}
+
+	zBOOL TraceBVHNodeStackExact(const zVEC3& rayOrigin, const zVEC3& rayDir, zCSubMeshStruct* meshEntry)
+	{
+		BVHNode* stack[100];  // Статический стек с запасом
+		int stackPtr = 0;    // Указатель на вершину стека
+
+		stack[stackPtr++] = meshEntry->bvhTree->root;  // Помещаем корень
+
+
+		zBOOL hitFound = FALSE;
+		zVEC3 inters;
+		zREAL alpha = 9999;
+		zREAL tmin, tmax;
+
+		auto proto = meshEntry->parentProto;
+		auto subMesh = meshEntry->subMesh;
+
+		while (stackPtr > 0)
+		{
+			BVHNode* node = stack[--stackPtr];
+
+#if defined(DEBUG_BUILD_BVH)
+			globalStackDepth = max(globalStackDepth, stackPtr);
+			raycastReport.NodeTreeCheckCounter++;
+			tmin = tmax = 1.0f;
+#endif
+
+
+
+			// Проверка пересечения луча с AABB узла (с учетом bestAlpha для early-out)
+			if (!(node->bbox.IsIntersecting(rayOrigin, rayDir, tmin, tmax) && tmax >= 0.0f && tmin <= 1.0f))
+			{
+				continue;
+			}
+
+			if (tmin > raycastReport.bestAlphaGlobal)
+			{
+				continue;
+			}
+
+			// Проверка пересечения с треугольниками в листе
+			for (int triIdx : node->triIndices)
+			{
+#if defined(DEBUG_BUILD_BVH)
+				raycastReport.TrisTreeCheckCounter++;
+#endif
+
+				if (proto->CheckRayPolyIntersection(subMesh, triIdx, rayOrigin, rayDir, inters, alpha))
 				{
 					hitFound = true;
 
@@ -287,7 +305,18 @@ namespace GOTHIC_ENGINE {
 	{
 		raycastReport.ClearCurrrentTrace();
 
-		auto result = TraceBVHNodeStack(rayOrigin, rayDir, meshEntry);
+		bool result = false;
+
+
+		// special case when we trace vob as floor, we need EXACT triangle-ray check
+		if (rayDir == zMV_DOWN)
+		{
+			result = TraceBVHNodeStackExact(rayOrigin, rayDir, meshEntry);
+		}
+		else
+		{
+			result = TraceBVHNodeStack(rayOrigin, rayDir, meshEntry);
+		}
 
 		if (result)
 		{
