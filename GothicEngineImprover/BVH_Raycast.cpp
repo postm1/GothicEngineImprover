@@ -634,7 +634,7 @@ namespace GOTHIC_ENGINE {
 
 				
 				
-				
+				/*
 				if (false && !freezeDebug)
 				{
 					auto posFoundDiff = raycastReport.intersGlobal.Distance(report.foundIntersection);
@@ -706,6 +706,7 @@ namespace GOTHIC_ENGINE {
 						DrawVisualObject(this, time, bestTriIndex);
 					}
 				}
+				*/
 				
 			}
 			// если запись не нашлась, вызывает обычный код, а новая запись будет добавлена на след. кадрах
