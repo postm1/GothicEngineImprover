@@ -280,12 +280,18 @@ namespace GOTHIC_ENGINE {
 		RX_End(54);
 
 		cmd << "Submeshes Found: " << submeshesFound.size() << endl;
-		cmd << "RaycastVobs build time: " << RX_PerfString(54) << " Size: " << pTraceMap.size() << endl;
-
-		cmd << "-----------------\n" << endl;
+		cmd << "RaycastVobs build time: " << RX_PerfString(54) 
+			<< " Size: " << pTraceMap.size() 
+			<< " Capacity: " << pTraceMap.bucket_count()
+			
+			<< endl;
 
 #if defined (DEBUG_MEMORY_CHECK)
 		PrintMemoryInfo();
 #endif
+
+		cmd << "-----------------\n" << endl;
+
+
 	}
 }
