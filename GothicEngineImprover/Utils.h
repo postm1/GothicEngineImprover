@@ -46,7 +46,7 @@ namespace GOTHIC_ENGINE {
 #define zMV_WALLSLIDE_ANGLE				(zREAL(25))
 #define zMV_WALLSLIDE_TURN_VELOCITY		(zREAL(0.14F))
 
-
+#define DEBUG_MEMORY_CHECK
 //#define DEF_PERF_APPLY
 //#define DEBUG_BUILD_BVH
 //#define DEBUG_LOOP_KEYS
@@ -153,6 +153,7 @@ namespace GOTHIC_ENGINE {
 	float sizeUnloatDestr = 0.0f;
 	bool showModel = false;
 	bool useNewMethodVobColl = false;
+	uint memoryAllocated = 0;
 
 
 	std::map<std::string, PerfStruct> perfArray;
@@ -437,6 +438,21 @@ namespace GOTHIC_ENGINE {
 	void PrintDebug(zSTRING str) {
 
 		testView->Print(F(3), F(14) + F(3) * countPrintDebug++, str);
+	}
+
+	void AddMemoryInfo(uint size)
+	{
+		memoryAllocated += size;
+	}
+
+	void SubMemoryInfo(uint size)
+	{
+		memoryAllocated -= size;
+	}
+	
+	void PrintMemoryInfo()
+	{
+		cmd << "MemoryAllocated: " << uint(memoryAllocated / 1000.0f) << " KB" << endl;
 	}
 
 	/*

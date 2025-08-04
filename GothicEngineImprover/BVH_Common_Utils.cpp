@@ -46,6 +46,10 @@ namespace GOTHIC_ENGINE {
 			if (node->right) nodes.push(node->right);
 
 			delete node;
+
+#if defined (DEBUG_MEMORY_CHECK)
+			SubMemoryInfo(sizeof(BVHNode));
+#endif
 		}
 	}
 

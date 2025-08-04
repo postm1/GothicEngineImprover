@@ -18,6 +18,11 @@ namespace GOTHIC_ENGINE {
 			bvhTree->DestroyTree(bvhTree->root);
 
 			delete bvhTree;
+
+#if defined (DEBUG_MEMORY_CHECK)
+			SubMemoryInfo(sizeof(BVH_Tree));
+#endif
+
 			bvhTree = nullptr;
 		}
 	}
@@ -27,6 +32,11 @@ namespace GOTHIC_ENGINE {
 		subMesh = subMeshCurrent;
 
 		bvhTree = new BVH_Tree();
+
+#if defined (DEBUG_MEMORY_CHECK)
+		AddMemoryInfo(sizeof(BVH_Tree));
+#endif
+
 		bvhTree->Build(proto, subMesh);
 	}
 
@@ -273,5 +283,9 @@ namespace GOTHIC_ENGINE {
 		cmd << "RaycastVobs build time: " << RX_PerfString(54) << " Size: " << pTraceMap.size() << endl;
 
 		cmd << "-----------------\n" << endl;
+
+#if defined (DEBUG_MEMORY_CHECK)
+		PrintMemoryInfo();
+#endif
 	}
 }
