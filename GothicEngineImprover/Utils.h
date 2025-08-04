@@ -21,6 +21,8 @@
 #include <sstream>
 #include <numeric>
 #include <stack>
+
+
 //#include <immintrin.h>
 
 using namespace std;
@@ -440,19 +442,40 @@ namespace GOTHIC_ENGINE {
 		testView->Print(F(3), F(14) + F(3) * countPrintDebug++, str);
 	}
 
-	void AddMemoryInfo(uint size)
+
+	std::mutex memoryMutex;
+	void AddMemoryInfo(uint size, zSTRING type)
 	{
+
+		std::lock_guard<std::mutex> lock(memoryMutex);
+
+		//cmd << "Add -> " << type << ": " << size << endl;
+
+		if (size > UINT_MAX - memoryAllocated) {
+			cmd << "Bad Add: " << size << " memoryAllocated: " << memoryAllocated << endl;
+
+			throw std::overflow_error("Memory allocation overflow: cannot add " + std::to_string(size));
+		}
 		memoryAllocated += size;
 	}
 
-	void SubMemoryInfo(uint size)
+	void SubMemoryInfo(uint size, zSTRING type)
 	{
+		std::lock_guard<std::mutex> lock(memoryMutex);
+
+		//cmd << "Delete -> " << type << ": " << size << endl;
+
+		if (size > memoryAllocated) {
+			cmd << "Bad subtract: " << size << " memoryAllocated: " << memoryAllocated << endl;
+
+			throw std::underflow_error("Memory deallocation underflow: cannot subtract " + std::to_string(size));
+		}
 		memoryAllocated -= size;
 	}
 	
 	void PrintMemoryInfo()
 	{
-		cmd << "MemoryAllocated: " << uint(memoryAllocated / 1000.0f) << " KB" << endl;
+		cmd << "MemoryAllocated: " << uint(memoryAllocated / 1000) << " KB" << endl;
 	}
 
 	/*

@@ -48,7 +48,7 @@ namespace GOTHIC_ENGINE {
 			delete node;
 
 #if defined (DEBUG_MEMORY_CHECK)
-			SubMemoryInfo(sizeof(BVHNode));
+			SubMemoryInfo(sizeof(BVHNode), "DestroyTree (BVHNode)");
 #endif
 		}
 	}

@@ -20,7 +20,7 @@ namespace GOTHIC_ENGINE {
 			delete bvhTree;
 
 #if defined (DEBUG_MEMORY_CHECK)
-			SubMemoryInfo(sizeof(BVH_Tree));
+			SubMemoryInfo(sizeof(BVH_Tree), "zCSubMeshStruct::Clear (BVH_Tree)");
 #endif
 
 			bvhTree = nullptr;
@@ -34,7 +34,7 @@ namespace GOTHIC_ENGINE {
 		bvhTree = new BVH_Tree();
 
 #if defined (DEBUG_MEMORY_CHECK)
-		AddMemoryInfo(sizeof(BVH_Tree));
+		AddMemoryInfo(sizeof(BVH_Tree), "BuildMap (BVH_Tree)");
 #endif
 
 		bvhTree->Build(proto, subMesh);
@@ -285,6 +285,8 @@ namespace GOTHIC_ENGINE {
 			<< " Capacity: " << pTraceMap.bucket_count()
 			
 			<< endl;
+
+		cmd << "RAM : " << RAMUsed() << " KB" << endl;
 
 #if defined (DEBUG_MEMORY_CHECK)
 		PrintMemoryInfo();
