@@ -39,7 +39,9 @@ namespace GOTHIC_ENGINE {
 			BVHNode* node = nodes.top();
 			nodes.pop();
 
+#if defined (BVH_PARENT_POINTER)
 			node->parent = NULL;
+#endif
 
 			// Добавляем детей в стек
 			if (node->left) nodes.push(node->left);

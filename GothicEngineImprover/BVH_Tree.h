@@ -9,7 +9,9 @@ namespace GOTHIC_ENGINE {
 		std::vector<int> triIndices;
 		BVHNode* left = nullptr;
 		BVHNode* right = nullptr;
+#if defined (BVH_PARENT_POINTER)
 		BVHNode* parent = nullptr;
+#endif
 	};
 
 	struct BVH_Debug

@@ -250,8 +250,9 @@ namespace GOTHIC_ENGINE {
 #endif
 
 		nodesCount++;
-
+#if defined (BVH_PARENT_POINTER)
 		node->parent = parent;
+#endif
 
 		// Вычисляем общий bounding box для всех треугольников в данном списке
 		node->bbox = CalculateBBox(triIndices);

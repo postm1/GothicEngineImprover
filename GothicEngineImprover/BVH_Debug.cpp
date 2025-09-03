@@ -11,10 +11,12 @@ namespace GOTHIC_ENGINE {
 			nodeWayGlobal += Z(int)node + " <- ";
 		}
 
+#if defined (BVH_PARENT_POINTER)
 		if (node->parent)
 		{
 			GetNodeWay(node->parent);
 		}
+#endif
 	}
 	int FindNodeByIndexRec(BVHNode* node, int indexToFind, int& result)
 	{
@@ -231,9 +233,11 @@ namespace GOTHIC_ENGINE {
 			// Определяем цвет: левый (красный) или правый (синий)
 			zCOLOR color = GFX_WHITE; // Корень (если targetLevel=0)
 
+#if defined (BVH_PARENT_POINTER)
 			if (node->parent) {
 				color = (node == node->parent->left) ? GFX_RED : GFX_BLUE;
 			}
+#endif
 
 			node->bbox.Draw(color);
 			return;
