@@ -14,13 +14,7 @@ namespace GOTHIC_ENGINE {
 #endif
 	};
 
-	struct BVH_Debug
-	{
-		std::unordered_set<int> indexDebugCheck;
-		int triasCheckerCount;
-		std::atomic<int> globalNodesCount;
-		std::atomic<int> globalNodesHasIndexes;
-	} bvhDebug;
+	
 
 	class BVH_Tree
 	{
@@ -34,30 +28,35 @@ namespace GOTHIC_ENGINE {
 		int nodesCount = 0;
 #endif
 
-
+		//====================================================================
 		void SplitByBestAxis(BVHNode* node, std::vector<int>& triIndices, std::vector<int>& left, std::vector<int>& right, bool isDebug, std::vector<zVEC3>& centersTrias,
 			std::vector<zTBBox3D>& bboxTrias);
 		void AddAllTriangles(BVHNode* node, std::vector<int>& input, bool isDebug);
 		void SplitByBinnedSAH(BVHNode* node, std::vector<int>& triIndices, std::vector<int>& left, std::vector<int>& right, bool isDebug, std::vector<zVEC3>& centersTrias,
 			std::vector<zTBBox3D>& bboxTrias);
+		BVHNode* BuildNode(BVHNode* parent, std::vector<int>& triIndices, int depth, bool isDebug, std::vector<zVEC3>& centersTrias,
+			std::vector<zTBBox3D>& bboxTrias);
+
 
 		zTBBox3D CalculateBBox(const std::vector<int>& indices);
 		zVEC3 GetTriangleCenter(int triIdx);
 		zTBBox3D GetTriangleBbox(int triIdx);
 		void ScaleBboxes(BVHNode* node);
-
-
 		void Build(zCProgMeshProto* proto, zCProgMeshProto::zCSubMesh* subMesh);
-		BVHNode* BuildNode(BVHNode* parent, std::vector<int>& triIndices, int depth, bool isDebug, std::vector<zVEC3>& centersTrias,
-			std::vector<zTBBox3D>& bboxTrias);
 		void DestroyTree(BVHNode*& root);
 
 		// DEBUG FUNCS
-
 		int CheckAllIndices(const std::vector<int>& triIndices);
-
 
 		BVH_Tree::BVH_Tree();
 
 	};
+
+	struct BVH_Debug
+	{
+		std::unordered_set<int> indexDebugCheck;
+		int triasCheckerCount;
+		std::atomic<int> globalNodesCount;
+		std::atomic<int> globalNodesHasIndexes;
+	} bvhDebug;
 }
