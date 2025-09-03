@@ -30,7 +30,9 @@ namespace GOTHIC_ENGINE {
 		zCProgMeshProto* proto;
 		BVHNode* root;
 
-		
+#if defined (DEBUG_BUILD_BVH)
+		int nodesCount = 0;
+#endif
 
 
 		void SplitByBestAxis(BVHNode* node, std::vector<int>& triIndices, std::vector<int>& left, std::vector<int>& right, bool isDebug, std::vector<zVEC3>& centersTrias,
