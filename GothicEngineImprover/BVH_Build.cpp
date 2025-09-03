@@ -4,7 +4,8 @@
 namespace GOTHIC_ENGINE {
 	// Add your code here . . .
 
-	void BVH_Tree::SplitByBestAxis(BVHNode* node, std::vector<int>& triIndices, std::vector<int>& left, std::vector<int>& right, bool isDebug)
+	void BVH_Tree::SplitByBestAxis(BVHNode* node, std::vector<int>& triIndices, std::vector<int>& left, std::vector<int>& right, bool isDebug, std::vector<zVEC3>& centersTrias,
+		std::vector<zTBBox3D>& bboxTrias)
 	{
 		int data[3][2] = { 0 };
 		zTBBox3D dataVolume[3][2];
@@ -96,7 +97,8 @@ namespace GOTHIC_ENGINE {
 		}
 	}
 
-	void BVH_Tree::SplitByBinnedSAH(BVHNode* node, std::vector<int>& triIndices, std::vector<int>& left, std::vector<int>& right, bool isDebug)
+	void BVH_Tree::SplitByBinnedSAH(BVHNode* node, std::vector<int>& triIndices, std::vector<int>& left, std::vector<int>& right, bool isDebug, std::vector<zVEC3>& centersTrias,
+		std::vector<zTBBox3D>& bboxTrias)
 	{
 		int BINS = (triIndices.size() < 100) ? 6 : 12; // Пример настройки
 
@@ -171,7 +173,7 @@ namespace GOTHIC_ENGINE {
 		if (bestAxis == -1)
 		{
 			//cmd << "Can't find -> Split by Best axis" << endl;
-			SplitByBestAxis(node, triIndices, left, right, isDebug);
+			SplitByBestAxis(node, triIndices, left, right, isDebug, centersTrias, bboxTrias);
 			return;
 		}
 
@@ -234,7 +236,13 @@ namespace GOTHIC_ENGINE {
 
 	
 
-	BVHNode* BVH_Tree::BuildNode(BVHNode* parent, std::vector<int>& triIndices, int depth, bool isDebug)
+	BVHNode* BVH_Tree::BuildNode(BVHNode* parent, 
+		std::vector<int>& triIndices, 
+		int depth, 
+		bool isDebug,
+		std::vector<zVEC3>& centersTrias,
+		std::vector<zTBBox3D>& bboxTrias
+	)
 	{
 		if (triIndices.size() == 0)
 		{
@@ -278,11 +286,11 @@ namespace GOTHIC_ENGINE {
 		// если уже загрузились, строим дерево быстрым способом, иначе будут подфризы	
 		if (OnLevelFullLoaded_Once)
 		{
-			SplitByBestAxis(node, triIndices, leftIndices, rightIndices, isDebug);
+			SplitByBestAxis(node, triIndices, leftIndices, rightIndices, isDebug, centersTrias, bboxTrias);
 		}
 		else
 		{
-			SplitByBinnedSAH(node, triIndices, leftIndices, rightIndices, isDebug);
+			SplitByBinnedSAH(node, triIndices, leftIndices, rightIndices, isDebug, centersTrias, bboxTrias);
 		}
 		
 
@@ -294,8 +302,8 @@ namespace GOTHIC_ENGINE {
 			return node;
 		}
 
-		node->left = BuildNode(node, leftIndices, 0, isDebug);
-		node->right = BuildNode(node, rightIndices, 0, isDebug);
+		node->left = BuildNode(node, leftIndices, 0, isDebug, centersTrias, bboxTrias);
+		node->right = BuildNode(node, rightIndices, 0, isDebug, centersTrias, bboxTrias);
 
 		return node;
 	}
@@ -336,6 +344,8 @@ namespace GOTHIC_ENGINE {
 		std::iota(triIndices.begin(), triIndices.end(), 0);
 
 
+		std::vector<zVEC3> centersTrias;
+		std::vector<zTBBox3D> bboxTrias;
 
 		centersTrias.reserve(subMesh->triList.GetNum());
 		bboxTrias.reserve(subMesh->triList.GetNum());
@@ -353,7 +363,7 @@ namespace GOTHIC_ENGINE {
 
 
 
-		root = BuildNode(NULL, triIndices, 0, isDebugBuild);
+		root = BuildNode(NULL, triIndices, 0, isDebugBuild, centersTrias, bboxTrias);
 
 		ScaleBboxes(root);
 
