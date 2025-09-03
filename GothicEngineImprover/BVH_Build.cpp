@@ -248,13 +248,13 @@ namespace GOTHIC_ENGINE {
 #if defined (DEBUG_MEMORY_CHECK)
 
 		bvhDebug.globalNodesCount++;
-
+		nodesCount++;
 		AddMemoryInfo(sizeof(BVHNode), "BuildNode (BVHNode)");
 		
 #endif
 		
 
-		nodesCount++;
+		
 #if defined (BVH_PARENT_POINTER)
 		node->parent = parent;
 #endif
@@ -370,7 +370,9 @@ namespace GOTHIC_ENGINE {
 				<< proto->GetVisualName()
 				<< " Name: " << proto->GetObjectName()
 				<< " | Tris: " << bvhDebug.triasCheckerCount << "/" << subMesh->triList.GetNum()
+#if defined (DEBUG_MEMORY_CHECK)
 				<< " | Nodes: " << nodesCount
+#endif
 				<< " | " << RX_PerfString(53) << endl;
 		}
 

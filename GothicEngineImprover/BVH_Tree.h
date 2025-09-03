@@ -32,7 +32,9 @@ namespace GOTHIC_ENGINE {
 
 		std::vector<zVEC3> centersTrias;
 		std::vector<zTBBox3D> bboxTrias;
+#if defined (DEBUG_MEMORY_CHECK)
 		int nodesCount = 0;
+#endif
 
 		void SplitByBestAxis(BVHNode* node, std::vector<int>& triIndices, std::vector<int>& left, std::vector<int>& right, bool isDebug);
 		void AddAllTriangles(BVHNode* node, std::vector<int>& input, bool isDebug);
