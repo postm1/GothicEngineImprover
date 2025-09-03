@@ -246,8 +246,13 @@ namespace GOTHIC_ENGINE {
 		BVHNode* node = new BVHNode();
 
 #if defined (DEBUG_MEMORY_CHECK)
+
+		bvhDebug.globalNodesCount++;
+
 		AddMemoryInfo(sizeof(BVHNode), "BuildNode (BVHNode)");
+		
 #endif
+		
 
 		nodesCount++;
 #if defined (BVH_PARENT_POINTER)

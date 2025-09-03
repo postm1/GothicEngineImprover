@@ -285,8 +285,9 @@ namespace GOTHIC_ENGINE {
 			<< " Capacity: " << pTraceMap.bucket_count()
 			
 			<< endl;
-
+		cmd << "NodesGlobalCount: " << bvhDebug.globalNodesCount << endl;
 		cmd << "RAM : " << RAMUsed() << " KB" << endl;
+		
 
 #if defined (DEBUG_MEMORY_CHECK)
 		PrintMemoryInfo();
