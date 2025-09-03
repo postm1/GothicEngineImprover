@@ -47,12 +47,19 @@ namespace GOTHIC_ENGINE {
 			if (node->left) nodes.push(node->left);
 			if (node->right) nodes.push(node->right);
 
-			delete node;
-
 #if defined (DEBUG_MEMORY_CHECK)
 			bvhDebug.globalNodesCount--;
 			SubMemoryInfo(sizeof(BVHNode), "DestroyTree (BVHNode)");
+
+			if (node->triIndices.size() > 0)
+			{
+				bvhDebug.globalNodesHasIndexes--;
+			}
 #endif
+
+			delete node;
+
+
 		}
 	}
 

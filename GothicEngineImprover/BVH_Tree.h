@@ -19,7 +19,7 @@ namespace GOTHIC_ENGINE {
 		std::unordered_set<int> indexDebugCheck;
 		int triasCheckerCount;
 		std::atomic<int> globalNodesCount;
-
+		std::atomic<int> globalNodesHasIndexes;
 	} bvhDebug;
 
 	class BVH_Tree

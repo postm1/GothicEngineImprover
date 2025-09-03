@@ -231,6 +231,7 @@ namespace GOTHIC_ENGINE {
 			node->triIndices.assign(input.begin(), input.begin() + size);
 		}
 
+		bvhDebug.globalNodesHasIndexes++;
 		bvhDebug.triasCheckerCount += size;
 	}
 

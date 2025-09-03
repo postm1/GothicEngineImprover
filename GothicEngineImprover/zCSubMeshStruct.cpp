@@ -286,6 +286,8 @@ namespace GOTHIC_ENGINE {
 			
 			<< endl;
 		cmd << "NodesGlobalCount: " << bvhDebug.globalNodesCount << endl;
+		cmd << "NodeHasIndexes: " << bvhDebug.globalNodesHasIndexes << endl;
+		
 		cmd << "RAM : " << RAMUsed() << " KB" << endl;
 		
 
