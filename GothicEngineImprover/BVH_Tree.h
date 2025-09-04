@@ -27,7 +27,7 @@ namespace GOTHIC_ENGINE {
             //cmd << "Tree reserve: " << size << endl;
 
             firstBlockSize = size;
-            otherBlockSize = size > 50 ? size / 5 : size;
+            otherBlockSize = size > 50 ? size / 10 : size;
 
             currentBlock = nextNode = 0;
             blocks.clear();
