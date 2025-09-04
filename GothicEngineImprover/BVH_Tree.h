@@ -32,6 +32,27 @@ namespace GOTHIC_ENGINE {
             currentBlock = nextNode = 0;
             blocks.clear();
             AllocateBlock(true); // первый блок
+
+        }
+
+        uint32 GetTotalSize()
+        {
+            uint32 size = 0;
+
+            for (int i = 0; i < blocks.size(); i++)
+            {
+                if (i == 0)
+                {
+                    size += sizeof(BVHNode) * firstBlockSize;
+                }
+                else
+                {
+                    size += sizeof(BVHNode) * otherBlockSize;
+                }
+                
+            }
+
+            return size;
         }
 
         /// Получить новый узел
@@ -52,6 +73,11 @@ namespace GOTHIC_ENGINE {
         void AllocateBlock(bool first)
         {
             size_t size = (first ? firstBlockSize : otherBlockSize);
+
+
+#if defined (DEBUG_MEMORY_CHECK)
+            AddMemoryInfo(sizeof(BVHNode) * size, "AllocateBlock (BVHNode)");
+#endif
 
             /*
             if (first) {

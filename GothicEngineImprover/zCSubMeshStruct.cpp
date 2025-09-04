@@ -16,12 +16,15 @@ namespace GOTHIC_ENGINE {
 		if (bvhTree)
 		{
 			//bvhTree->DestroyTree(bvhTree->root);
-
-			delete bvhTree;
-
+			//cmd << "Remove Tree: " << bvhTree->proto->GetVisualName() << endl;
+			
+			uint32 size = bvhTree->pool.GetTotalSize();
 #if defined (DEBUG_MEMORY_CHECK)
+			SubMemoryInfo(size, "zCSubMeshStruct::Clear (BVH_Tree Pool)");
 			SubMemoryInfo(sizeof(BVH_Tree), "zCSubMeshStruct::Clear (BVH_Tree)");
 #endif
+
+			delete bvhTree;
 
 			bvhTree = nullptr;
 		}
