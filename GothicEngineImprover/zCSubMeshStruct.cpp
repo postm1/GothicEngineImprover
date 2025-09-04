@@ -15,7 +15,7 @@ namespace GOTHIC_ENGINE {
 	{
 		if (bvhTree)
 		{
-			bvhTree->DestroyTree(bvhTree->root);
+			//bvhTree->DestroyTree(bvhTree->root);
 
 			delete bvhTree;
 

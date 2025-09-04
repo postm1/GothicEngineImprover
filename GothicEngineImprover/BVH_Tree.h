@@ -15,11 +15,70 @@ namespace GOTHIC_ENGINE {
 	};
 
 	
+    class BVHNodePool
+    {
+    public:
+        /// »нициализаци€ пула (выдел€ет первый блок)
+        void Reserve(size_t size)
+        {
+            if (size == 0)
+                throw std::invalid_argument("Block size must be > 0");
+
+            //cmd << "Tree reserve: " << size << endl;
+
+            firstBlockSize = size;
+            otherBlockSize = size > 50 ? size / 5 : size;
+
+            currentBlock = nextNode = 0;
+            blocks.clear();
+            AllocateBlock(true); // первый блок
+        }
+
+        /// ѕолучить новый узел
+        BVHNode* GetNewNode()
+        {
+            size_t currentSize = (currentBlock == 0 ? firstBlockSize : otherBlockSize);
+
+            if (nextNode >= currentSize) {
+                AllocateBlock(false); // добавл€ем маленький блок
+                currentSize = otherBlockSize;
+            }
+
+            return &blocks[currentBlock][nextNode++];
+        }
+
+    private:
+        /// ¬ыделить новый блок
+        void AllocateBlock(bool first)
+        {
+            size_t size = (first ? firstBlockSize : otherBlockSize);
+
+            /*
+            if (first) {
+                cmd << "NEW BLOCK CREATED: " << size << endl;
+            }
+            else {
+                cmd << "ADD BLOCK: index: " << blocks.size()
+                    << " size: " << size << endl;
+            }
+            */
+
+            blocks.emplace_back(std::make_unique<BVHNode[]>(size));
+            currentBlock = blocks.size() - 1;
+            nextNode = 0;
+        }
+
+        std::vector<std::unique_ptr<BVHNode[]>> blocks; // список блоков
+        size_t firstBlockSize = 0;   // размер первого блока
+        size_t otherBlockSize = 0;   // размер остальных блоков
+        size_t nextNode = 0;         // индекс следующего свободного узла
+        size_t currentBlock = 0;     // индекс текущего блока
+    };
 
 	class BVH_Tree
 	{
 	public:
-
+        BVHNodePool pool;
 		zCProgMeshProto::zCSubMesh* subMesh;
 		zCProgMeshProto* proto;
 		BVHNode* root;

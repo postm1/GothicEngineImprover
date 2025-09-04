@@ -252,7 +252,8 @@ namespace GOTHIC_ENGINE {
 
 		//cmd << "triIndices: " << triIndices.size() << endl;
 
-		BVHNode* node = new BVHNode();
+		//BVHNode* node = new BVHNode();
+		BVHNode* node = pool.GetNewNode();
 
 #if defined (DEBUG_MEMORY_CHECK)
 
@@ -339,6 +340,7 @@ namespace GOTHIC_ENGINE {
 			bvhDebug.indexDebugCheck.clear();
 		}
 
+		pool.Reserve(subMesh->triList.GetNum());
 
 		std::vector<int> triIndices; // Индексы треугольников
 
