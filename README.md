@@ -1,6 +1,6 @@
 **Plugin for Gothic 2 Night of Raven**
 
-This plugin creates a BVH tree for a specific visual object with .3DS model
+This plugin creates a BVH tree for a specific visual object with .3DS model.
 It improves average FPS in 10%-50% range (depens on vobs amount in the scene)
 
 
