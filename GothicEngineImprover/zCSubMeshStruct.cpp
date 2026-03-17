@@ -231,7 +231,7 @@ namespace GOTHIC_ENGINE {
 		zCArray<zCVob*> arrVobs;
 
 		
-		cmd << "OnLoadedSize pTraceMap: " << pTraceMap.size() << endl;
+		cmd << "[BVH]: OnLevelLoaded pTraceMap size: " << pTraceMap.size() << endl;
 
 		ogame->GetWorld()->SearchVobListByBaseClass(zCVob::classDef, arrVobs, NULL);
 
@@ -283,7 +283,10 @@ namespace GOTHIC_ENGINE {
 
 		RX_End(54);
 
-		cmd << "Submeshes Found: " << submeshesFound.size() << endl;
+		cmd << "[BVH]: Submeshes Found: " << submeshesFound.size() << endl;
+
+		/*
+		
 		cmd << "RaycastVobs build time: " << RX_PerfString(54) 
 			<< " Size: " << pTraceMap.size() 
 			<< " Capacity: " << pTraceMap.bucket_count()
@@ -293,13 +296,13 @@ namespace GOTHIC_ENGINE {
 		cmd << "NodeHasIndexes: " << bvhDebug.globalNodesHasIndexes << endl;
 		
 		cmd << "RAM : " << RAMUsed() << " KB" << endl;
-		
+		*/
 
 #if defined (DEBUG_MEMORY_CHECK)
 		PrintMemoryInfo();
 #endif
 
-		cmd << "-----------------\n" << endl;
+		//cmd << "-----------------\n" << endl;
 
 
 	}
