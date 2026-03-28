@@ -19,7 +19,7 @@ namespace GOTHIC_ENGINE {
       debug.Init();
 #endif
 
-     
+      nodeCountCache.reserve(4000);
   }
 
   void Game_Exit() {
