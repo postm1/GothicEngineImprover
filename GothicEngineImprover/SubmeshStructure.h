@@ -108,10 +108,18 @@ namespace GOTHIC_ENGINE {
 namespace std {
 	template<> struct hash<GOTHIC_ENGINE::SubMeshKey> {
 		size_t operator()(const GOTHIC_ENGINE::SubMeshKey& key) const {
-			size_t h1 = hash<std::string>()(key.visualName);
-			size_t h2 = hash<std::string>()(key.materialName);
-			size_t h3 = hash<int>()(key.triCount);
-			return h1 ^ (h2 << 1) ^ (h3 << 2);
+			size_t seed = 0;
+
+			// hash_combine из boost (стандартный паттерн)
+			auto hash_combine = [](size_t& seed, size_t value) {
+				seed ^= value + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+			};
+
+			hash_combine(seed, std::hash <std::string> ()(key.visualName));
+			hash_combine(seed, std::hash<std::string>()(key.materialName));
+			hash_combine(seed, std::hash<int>()(key.triCount));
+
+			return seed;
 		}
 	};
 }
