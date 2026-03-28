@@ -51,7 +51,7 @@ namespace GOTHIC_ENGINE {
 //#define DEBUG_MEMORY_CHECK
 //#define BVH_PARENT_POINTER
 //#define DEF_PERF_APPLY
-#define DEBUG_BUILD_BVH
+//#define DEBUG_BUILD_BVH
 //#define DEBUG_LOOP_KEYS
 //#define DEBUG_HOOKS_TRACERAY
 

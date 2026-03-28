@@ -339,7 +339,33 @@ namespace GOTHIC_ENGINE {
 			bvhDebug.indexDebugCheck.clear();
 		}
 
-		pool.Reserve(subMesh->triList.GetNum());
+		SubMeshKey key;
+		key.visualName = proto->GetVisualName();
+		key.materialName = subMesh->material ? subMesh->material->GetName() : "NO_MAT";
+		key.triCount = subMesh->triList.GetNum();
+
+		size_t cachedNodeCount = 0;
+		bool useCache = false;
+		{
+			std::lock_guard<std::mutex> lock(nodeCountCacheMutex);
+			auto it = nodeCountCache.find(key);
+			if (it != nodeCountCache.end()) {
+				cachedNodeCount = it->second;
+				useCache = true;
+				countFoundCache++;
+			}
+			else
+			{
+				cacheMissCount++;
+			}
+		}
+
+		if (useCache) {
+			pool.ReserveExact(cachedNodeCount);
+		}
+		else {
+			pool.Reserve(key.triCount);   // старый метод с оценкой
+		}
 
 		std::vector<int> triIndices; // Индексы треугольников
 
@@ -370,15 +396,22 @@ namespace GOTHIC_ENGINE {
 
 		root = BuildNode(NULL, triIndices, 0, isDebugBuild, centersTrias, bboxTrias);
 
+		size_t actualNodeCount = pool.GetAllocatedCount();
+		if (!useCache) {
+			std::lock_guard<std::mutex> lock(nodeCountCacheMutex);
+			nodeCountCache[key] = actualNodeCount;
+
+			if (showBuildMessage) cmd << "[POOL]: " << proto->GetVisualName() 
+				
+				<< " RealNodes: " << actualNodeCount
+				<< endl;
+		}
+
 		ScaleBboxes(root);
 
 #if defined (DEBUG_BUILD_BVH)
 		RX_End(53);
 
-		cmd << "[Pool]: " << (int)&pool
-			<< " | Size: " << pool.GetAllocSize()
-			<< " | Tris: " << subMesh->triList.GetNum()
-			<< endl;
 #endif
 
 		bboxTrias.clear();

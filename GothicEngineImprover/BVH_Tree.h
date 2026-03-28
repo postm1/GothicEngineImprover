@@ -18,6 +18,22 @@ namespace GOTHIC_ENGINE {
     class BVHNodePool
     {
     public:
+
+        // Резервирование с точным размером (без оценки)
+        void ReserveExact(size_t exactSize)
+        {
+#if defined (DEBUG_BUILD_BVH)
+            cmd << "\n[ReserveExact]: " << exactSize << " | Ptr: " << (int)this << endl;
+#endif
+
+            firstBlockSize = exactSize;
+            otherBlockSize = exactSize;
+            currentBlock = nextNode = 0;
+            allocatedCount = 0;         // сброс счётчика
+            blocks.clear();
+            AllocateBlock(true);
+        }
+
         /// Инициализация пула (выделяет первый блок)
         void Reserve(size_t size)
         {
@@ -40,7 +56,7 @@ namespace GOTHIC_ENGINE {
             firstBlockSize = estimatedMaxNodes;
             otherBlockSize = estimatedMaxNodes;   // Одинаковые блоки для упрощения
             
-
+            allocatedCount = 0;
             currentBlock = nextNode = 0;
             blocks.clear();
             AllocateBlock(true); // первый блок
@@ -81,21 +97,19 @@ namespace GOTHIC_ENGINE {
                 currentSize = otherBlockSize;
             }
 
+            allocatedCount++;
+
             return &blocks[currentBlock][nextNode++];
         }
 
-        size_t GetAllocSize()
-        {
-            return sumAlloc;
-        }
+        // Получить количество выделенных узлов
+        size_t GetAllocatedCount() const { return allocatedCount; }
 
     private:
         /// Выделить новый блок
         void AllocateBlock(bool first)
         {
             size_t size = (first ? firstBlockSize : otherBlockSize);
-
-            sumAlloc += size;
 
 #if defined (DEBUG_MEMORY_CHECK)
             AddMemoryInfo(sizeof(BVHNode) * size, "AllocateBlock (BVHNode)");
@@ -121,7 +135,7 @@ namespace GOTHIC_ENGINE {
         size_t otherBlockSize = 0;   // размер остальных блоков
         size_t nextNode = 0;         // индекс следующего свободного узла
         size_t currentBlock = 0;     // индекс текущего блока
-        size_t sumAlloc = 0;
+        size_t allocatedCount;
     };
 
 	class BVH_Tree

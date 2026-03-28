@@ -1,6 +1,8 @@
 // Supported with union (c) 2020 Union team
 // Union HEADER file
 
+
+
 namespace GOTHIC_ENGINE {
 	// Add your code here . . .
 
@@ -75,6 +77,20 @@ namespace GOTHIC_ENGINE {
 
 	} raycastReport;
 
+	// Ключ для кэширования количества узлов по визуалу, материалу и числу треугольников
+	struct SubMeshKey {
+		std::string visualName;
+		std::string materialName;
+		int triCount;
+
+		bool operator==(const SubMeshKey& other) const {
+			return visualName == other.visualName &&
+				materialName == other.materialName &&
+				triCount == other.triCount;
+		}
+	};
+
+
 	std::unordered_map<zCProgMeshProto::zCSubMesh*, zCSubMeshStruct> pTraceMap;
 
 
@@ -87,4 +103,24 @@ namespace GOTHIC_ENGINE {
 
 
 
+}
+
+namespace std {
+	template<> struct hash<GOTHIC_ENGINE::SubMeshKey> {
+		size_t operator()(const GOTHIC_ENGINE::SubMeshKey& key) const {
+			size_t h1 = hash<std::string>()(key.visualName);
+			size_t h2 = hash<std::string>()(key.materialName);
+			size_t h3 = hash<int>()(key.triCount);
+			return h1 ^ (h2 << 1) ^ (h3 << 2);
+		}
+	};
+}
+
+
+namespace GOTHIC_ENGINE {
+
+	std::unordered_map<SubMeshKey, size_t> nodeCountCache;
+	std::mutex nodeCountCacheMutex;
+	std::atomic<uint> countFoundCache { 0 };
+	std::atomic<uint> cacheMissCount{ 0 };
 }

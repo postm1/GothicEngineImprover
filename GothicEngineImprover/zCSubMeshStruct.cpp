@@ -188,10 +188,14 @@ namespace GOTHIC_ENGINE {
 #if defined(DEBUG_BUILD_BVH)
 		const unsigned int maxThreads = 1;
 #else
-		const unsigned int maxThreads = 1;// std::thread::hardware_concurrency();
+		const unsigned int maxThreads = std::thread::hardware_concurrency();
 #endif
 		
 		const size_t itemsPerThread = (totalItems + maxThreads - 1) / maxThreads;
+
+
+		countFoundCache = 0;
+		cacheMissCount = 0;
 
 		// 1. Каждый поток работает со своим локальным результатом
 		std::vector<std::thread> threads;
@@ -231,7 +235,7 @@ namespace GOTHIC_ENGINE {
 		zCArray<zCVob*> arrVobs;
 
 		
-		cmd << "[BVH]: OnLevelLoaded pTraceMap size: " << pTraceMap.size() << endl;
+		cmd << "\n[BVH]: OnLevelLoaded pTraceMap size: " << pTraceMap.size() << endl;
 
 		ogame->GetWorld()->SearchVobListByBaseClass(zCVob::classDef, arrVobs, NULL);
 
@@ -277,14 +281,19 @@ namespace GOTHIC_ENGINE {
 		pTraceMap.reserve(submeshesFound.size());
 		
 
+
+	
 		//cmd << "ProcessAllSubMeshesParallel" << endl;
 
 		ProcessAllSubMeshesParallel(submeshesFound, pTraceMap);
 
 		RX_End(54);
 
-		cmd << "[BVH]: Submeshes Found: " << submeshesFound.size() << endl;
-
+		cmd << "[BVH]: Submeshes Found: " << submeshesFound.size() 
+			<< " | NodesCacheCountSize: " << nodeCountCache.size()
+			<< " | BuildTime: " << RX_PerfString(54)
+			<< " | Found/Miss: " << countFoundCache << "/" << cacheMissCount
+			<< endl << endl;
 		/*
 		
 		cmd << "RaycastVobs build time: " << RX_PerfString(54) 
