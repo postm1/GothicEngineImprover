@@ -24,10 +24,22 @@ namespace GOTHIC_ENGINE {
             if (size == 0)
                 throw std::invalid_argument("Block size must be > 0");
 
-            //cmd << "Tree reserve: " << size << endl;
+            
 
+            /*
             firstBlockSize = size;
-            otherBlockSize = size > 50 ? size / 10 : size;
+            otherBlockSize = size > 50 ? size / 5 : size;
+            */
+
+            
+            size_t estimatedMaxNodes = size + size / 4; // примерно еще 25% для узлов других
+#if defined (DEBUG_BUILD_BVH)
+            cmd << "\n[Tree reserve]: " << estimatedMaxNodes << " | Ptr: " << (int)this << endl;
+#endif
+
+            firstBlockSize = estimatedMaxNodes;
+            otherBlockSize = estimatedMaxNodes;   // Одинаковые блоки для упрощения
+            
 
             currentBlock = nextNode = 0;
             blocks.clear();
@@ -61,11 +73,20 @@ namespace GOTHIC_ENGINE {
             size_t currentSize = (currentBlock == 0 ? firstBlockSize : otherBlockSize);
 
             if (nextNode >= currentSize) {
+
+#if defined (DEBUG_BUILD_BVH)
+                cmd << "\tAddBlockAgain: " << currentSize << " | Ptr: " << (int)this << endl;
+#endif
                 AllocateBlock(false); // добавляем маленький блок
                 currentSize = otherBlockSize;
             }
 
             return &blocks[currentBlock][nextNode++];
+        }
+
+        size_t GetAllocSize()
+        {
+            return sumAlloc;
         }
 
     private:
@@ -74,6 +95,7 @@ namespace GOTHIC_ENGINE {
         {
             size_t size = (first ? firstBlockSize : otherBlockSize);
 
+            sumAlloc += size;
 
 #if defined (DEBUG_MEMORY_CHECK)
             AddMemoryInfo(sizeof(BVHNode) * size, "AllocateBlock (BVHNode)");
@@ -99,6 +121,7 @@ namespace GOTHIC_ENGINE {
         size_t otherBlockSize = 0;   // размер остальных блоков
         size_t nextNode = 0;         // индекс следующего свободного узла
         size_t currentBlock = 0;     // индекс текущего блока
+        size_t sumAlloc = 0;
     };
 
 	class BVH_Tree

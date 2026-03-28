@@ -374,6 +374,11 @@ namespace GOTHIC_ENGINE {
 
 #if defined (DEBUG_BUILD_BVH)
 		RX_End(53);
+
+		cmd << "[Pool]: " << (int)&pool
+			<< " | Size: " << pool.GetAllocSize()
+			<< " | Tris: " << subMesh->triList.GetNum()
+			<< endl;
 #endif
 
 		bboxTrias.clear();

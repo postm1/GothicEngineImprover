@@ -188,7 +188,7 @@ namespace GOTHIC_ENGINE {
 #if defined(DEBUG_BUILD_BVH)
 		const unsigned int maxThreads = 1;
 #else
-		const unsigned int maxThreads = std::thread::hardware_concurrency();
+		const unsigned int maxThreads = 1;// std::thread::hardware_concurrency();
 #endif
 		
 		const size_t itemsPerThread = (totalItems + maxThreads - 1) / maxThreads;
