@@ -289,11 +289,21 @@ namespace GOTHIC_ENGINE {
 
 		RX_End(54);
 
-		cmd << "[BVH]: Submeshes Found: " << submeshesFound.size() 
+		auto info = GetMemoryInfo();
+
+		cmd << "[BVH]: Submeshes Found: " << submeshesFound.size()
 			<< " | NodesCacheCountSize: " << nodeCountCache.size()
 			<< " | BuildTime: " << RX_PerfString(54)
 			<< " | Found/Miss: " << countFoundCache << "/" << cacheMissCount
-			<< endl << endl;
+			<< endl;
+
+		cmd << "[BVH]: RAM: " << Z(int)info.usedVirtualMB << zSTRING(" MB")
+			<< " | Free: " << Z(int)info.availableVirtualMB << " MB"
+			<< " | Private: " << Z(int)info.privateBytesMB << " MB"
+			<< endl;
+
+		cmd << endl;
+
 		/*
 		
 		cmd << "RaycastVobs build time: " << RX_PerfString(54) 

@@ -146,6 +146,46 @@ namespace GOTHIC_ENGINE {
 		return nRam;
 	}
 
+	struct MemoryInfo {
+		DWORD64 usedVirtualMB;      // Занято виртуального пространства
+		DWORD64 availableVirtualMB; // Свободно виртуального пространства до OOM
+		DWORD64 totalVirtualMB;     // Общий лимит процесса (2 ГБ, 3 ГБ или 4 ГБ)
+		DWORD64 privateBytesMB;     // Реальные данные процесса (Heap/Stack)
+		float usedPercentage; // Процент занятого пространства
+	};
+
+	MemoryInfo GetMemoryInfo() {
+		MemoryInfo info = { 0 };
+		MEMORYSTATUSEX memStatus;
+		memStatus.dwLength = sizeof(MEMORYSTATUSEX);
+
+		if (GlobalMemoryStatusEx(&memStatus)) {
+			// ullTotalVirtual автоматически покажет правильный лимит:
+			// ~2048 МБ (без LAA), ~3072 МБ (32-bit OS с LAA), или ~4096 МБ (64-bit OS с LAA)
+			info.totalVirtualMB = memStatus.ullTotalVirtual / (1024 * 1024);
+
+			// ullAvailVirtual - это то, сколько адресов еще не зарезервировано. 
+			// Именно падение этого значения до нуля вызывает OOM.
+			info.availableVirtualMB = memStatus.ullAvailVirtual / (1024 * 1024);
+
+			// Реально используемое адресное пространство
+			info.usedVirtualMB = info.totalVirtualMB - info.availableVirtualMB;
+
+			// Считаем процент(защищаемся от деления на ноль на всякий случай)
+			if (info.totalVirtualMB > 0) {
+				info.usedPercentage = ((float)info.usedVirtualMB / (float)info.totalVirtualMB) * 100.0f;
+			}
+		}
+
+		PROCESS_MEMORY_COUNTERS_EX pmc;
+		if (GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc))) {
+			info.privateBytesMB = pmc.PrivateUsage / (1024 * 1024);
+		}
+
+		return info;
+	}
+
+
 	bool OnLevelFullLoaded_Once = false;
 	double visualLoadBVHTimeThisFrame = 0.0f;
 	bool bShowPerfTimers = true;
