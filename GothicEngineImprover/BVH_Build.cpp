@@ -325,7 +325,7 @@ namespace GOTHIC_ENGINE {
 
 #if defined (DEBUG_BUILD_BVH)
 
-		if (showBuildMessage) cmd << "\n========= BUILD: " << proto->GetVisualName() << endl;
+		cmd << "\n========= BUILD: " << proto->GetVisualName() << endl;
 		
 
 		RX_Begin(53);
